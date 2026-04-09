@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { FiSettings, FiMonitor, FiServer, FiBox } from "react-icons/fi";
+import { FiSettings, FiMonitor, FiServer, FiBox, FiChevronRight, FiCheck } from "react-icons/fi";
+import { Button } from "@/components/ui/button";
 
 import { GeneralConfig } from "./general";
 import { FrontendConfig } from "./frontend";
@@ -19,6 +20,9 @@ const CATEGORY_ICONS: Record<Category, React.ElementType> = {
 
 export function Sidebar() {
 	const [activeTab, setActiveTab] = useState<Category>("General");
+
+	const activeIndex = CATEGORIES.indexOf(activeTab);
+	const hasNext = activeIndex < CATEGORIES.length - 1;
 
 	return (
 		<div className="w-[450px] flex-shrink-0 flex flex-col h-full bg-background border-r">
@@ -55,11 +59,31 @@ export function Sidebar() {
 			</div>
 
 			{/* Content Scrollable Area */}
-			<div className="flex-1 overflow-y-auto p-4 pt-0 custom-scrollbar">
-				{activeTab === "General" && <GeneralConfig />}
-				{activeTab === "Frontend" && <FrontendConfig />}
-				{activeTab === "Backend" && <BackendConfig />}
-				{activeTab === "Addons" && <AddonsConfig />}
+			<div className="flex-1 overflow-y-auto p-4 pt-0 custom-scrollbar relative">
+				<div className="min-h-full flex flex-col">
+					<div className="flex-1">
+						{activeTab === "General" && <GeneralConfig />}
+						{activeTab === "Frontend" && <FrontendConfig />}
+						{activeTab === "Backend" && <BackendConfig />}
+						{activeTab === "Addons" && <AddonsConfig />}
+					</div>
+					
+					{/* Footer Navigation */}
+					<div className="mt-8 pt-4 pb-4 border-t flex justify-end">
+						{hasNext ? (
+							<Button
+								onClick={() => setActiveTab(CATEGORIES[activeIndex + 1])}
+								className="gap-2 rounded-xl shadow-sm px-6 h-11"
+							>
+								Next: {CATEGORIES[activeIndex + 1]} <FiChevronRight className="w-4 h-4" />
+							</Button>
+						) : (
+							<Button className="gap-2 rounded-xl bg-green-600 hover:bg-green-700 text-white shadow-sm px-6 h-11">
+								Generate Template <FiCheck className="w-4 h-4" />
+							</Button>
+						)}
+					</div>
+				</div>
 			</div>
 		</div>
 	);

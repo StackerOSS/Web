@@ -7,11 +7,14 @@ export function CreatePage() {
 		<div className="flex flex-col h-screen overflow-hidden bg-background text-foreground">
 			{/* Header */}
 			<header className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b bg-background z-20">
-				<div>
-					<h1 className="text-xl font-bold tracking-tight">Stacker</h1>
-					<p className="text-sm text-muted-foreground font-medium">
-						Build your stack. Instantly.
-					</p>
+				<div className="flex items-center gap-3">
+					<img src="/logo.png" alt="Stacker Logo" className="w-8 h-8 object-contain" />
+					<div>
+						<h1 className="text-xl font-bold tracking-tight">Stacker</h1>
+						<p className="text-sm text-muted-foreground font-medium hidden sm:block">
+							Build your stack. Instantly.
+						</p>
+					</div>
 				</div>
 				<div>
 					<Button className="font-semibold shadow-sm">Generate Template</Button>

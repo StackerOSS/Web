@@ -27,10 +27,38 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 				content: "width=device-width, initial-scale=1",
 			},
 			{
-				title: "TanStack Start Starter",
+				title: "Stacker - Build Your Stack Instantly",
+			},
+			{
+				name: "description",
+				content: "Visually generate your perfect web development stack.",
+			},
+			{
+				property: "og:title",
+				content: "Stacker - Build Your Stack Instantly",
+			},
+			{
+				property: "og:description",
+				content: "Visually generate your perfect web development stack.",
+			},
+			{
+				property: "og:image",
+				content: "/og.png",
+			},
+			{
+				name: "twitter:card",
+				content: "summary_large_image",
+			},
+			{
+				name: "twitter:image",
+				content: "/og.png",
 			},
 		],
 		links: [
+			{
+				rel: "icon",
+				href: "/logo.png",
+			},
 			{
 				rel: "stylesheet",
 				href: appCss,
