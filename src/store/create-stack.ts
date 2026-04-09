@@ -43,6 +43,8 @@ interface StackState {
 	monitoring: string;
 	i18n: string;
 	devTooling: string[];
+	typings: "Zod" | "ArkType" | "";
+	animations: "Framer Motion" | "Motion" | "AutoAnimate" | "GSAP" | "";
 
 	// Actions
 	setName: (name: string) => void;
@@ -67,6 +69,8 @@ interface StackState {
 	setMonitoring: (mon: string) => void;
 	setI18n: (i18n: string) => void;
 	toggleDevTooling: (tool: string) => void;
+	setTypings: (typings: StackState["typings"]) => void;
+	setAnimations: (animations: StackState["animations"]) => void;
 }
 
 export const useStackStore = create<StackState>((set) => ({
@@ -96,6 +100,8 @@ export const useStackStore = create<StackState>((set) => ({
 	monitoring: "",
 	i18n: "",
 	devTooling: [],
+	typings: "",
+	animations: "",
 
 	setName: (name) => set({ name }),
 	setPackageManager: (pm) => set({ packageManager: pm }),
@@ -145,4 +151,6 @@ export const useStackStore = create<StackState>((set) => ({
 				? state.devTooling.filter((t) => t !== tool)
 				: [...state.devTooling, tool],
 		})),
+	setTypings: (typings) => set({ typings }),
+	setAnimations: (animations) => set({ animations }),
 }));

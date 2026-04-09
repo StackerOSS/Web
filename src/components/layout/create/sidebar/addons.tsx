@@ -8,10 +8,10 @@ import {
 	SiRailway,
 	SiSentry,
 	SiClerk,
-	SiPrisma,
 	SiStrapi,
 	SiStorybook,
 	SiEslint,
+	SiGreensock,
 } from "react-icons/si";
 import {
 	FiGrid,
@@ -25,6 +25,11 @@ import {
 	FiMessageCircle,
 	FiSettings,
 	FiTerminal,
+	FiType,
+	FiCheckSquare,
+	FiVideo,
+	FiFramer,
+	FiWind
 } from "react-icons/fi";
 
 const INT_ICONS: Record<string, React.ElementType> = {
@@ -255,6 +260,83 @@ export function AddonsConfig() {
 							>
 								<Icon className="w-3 h-3 shrink-0" />
 								<span className="font-medium">{tool}</span>
+							</Button>
+						);
+					})}
+				</div>
+			</div>
+
+			<Separator className="ml-12 w-[calc(100%-3rem)]" />
+
+			{/* Typings / Validation */}
+			<div className="space-y-4">
+				<div className="flex gap-3">
+					<div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+						<FiType className="h-5 w-5" />
+					</div>
+					<div className="space-y-1">
+						<Label className="text-base font-semibold">Validation & Typings</Label>
+						<div className="text-sm text-muted-foreground leading-snug">
+							Select a robust schema validation library for your data and APIs.
+						</div>
+					</div>
+				</div>
+				<div className="grid grid-cols-2 gap-3 ml-12 w-[calc(100%-3rem)]">
+					{["Zod", "ArkType"].map((typ) => {
+						const Icon = typ === "Zod" ? FiCheckSquare : FiType;
+						return (
+							<Button
+								key={typ}
+								variant={store.typings === typ ? "default" : "outline"}
+								onClick={() => store.setTypings(typ as any)}
+								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
+									store.typings === typ
+										? "ring-2 ring-primary/20 shadow-md"
+										: "hover:bg-muted/50"
+								}`}
+							>
+								<Icon className="w-5 h-5 shrink-0" />
+								<span className="font-medium text-sm">{typ}</span>
+							</Button>
+						);
+					})}
+				</div>
+			</div>
+
+			<Separator className="ml-12 w-[calc(100%-3rem)]" />
+
+			{/* Animations */}
+			<div className="space-y-4">
+				<div className="flex gap-3">
+					<div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+						<FiVideo className="h-5 w-5" />
+					</div>
+					<div className="space-y-1">
+						<Label className="text-base font-semibold">Animations</Label>
+						<div className="text-sm text-muted-foreground leading-snug">
+							Add a powerful motion library for fluid UI transitions.
+						</div>
+					</div>
+				</div>
+				<div className="grid grid-cols-2 gap-3 ml-12 w-[calc(100%-3rem)]">
+					{["Framer Motion", "Motion", "AutoAnimate", "GSAP"].map((anim) => {
+						const Icon = 
+							anim === "Framer Motion" ? FiFramer :
+							anim === "GSAP" ? SiGreensock :
+							anim === "AutoAnimate" ? FiZap : FiWind;
+						return (
+							<Button
+								key={anim}
+								variant={store.animations === anim ? "default" : "outline"}
+								onClick={() => store.setAnimations(anim as any)}
+								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
+									store.animations === anim
+										? "ring-2 ring-primary/20 shadow-md"
+										: "hover:bg-muted/50"
+								}`}
+							>
+								<Icon className="w-5 h-5 shrink-0" />
+								<span className="font-medium text-sm">{anim}</span>
 							</Button>
 						);
 					})}
