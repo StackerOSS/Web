@@ -2,7 +2,61 @@ import { useStackStore } from "@/store/create-stack";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { FiGrid, FiSend, FiActivity, FiGlobe, FiTool } from "react-icons/fi";
+import {
+	SiCloudflare,
+	SiNetlify,
+	SiRailway,
+	SiSentry,
+	SiClerk,
+	SiPrisma,
+	SiStrapi,
+	SiStorybook,
+	SiEslint,
+} from "react-icons/si";
+import {
+	FiGrid,
+	FiSend,
+	FiActivity,
+	FiGlobe,
+	FiTool,
+	FiUserCheck,
+	FiDatabase,
+	FiZap,
+	FiMessageCircle,
+	FiSettings,
+	FiTerminal,
+} from "react-icons/fi";
+
+const INT_ICONS: Record<string, React.ElementType> = {
+	Cloudflare: SiCloudflare,
+	Netlify: SiNetlify,
+	Railway: SiRailway,
+	Sentry: SiSentry,
+	WorkOS: FiUserCheck,
+	Clerk: SiClerk,
+	Neon: FiDatabase,
+	Prisma: SiPrisma,
+	Strapi: SiStrapi,
+};
+
+const DEP_ICONS: Record<string, React.ElementType> = {
+	Cloudflare: SiCloudflare,
+	Netlify: SiNetlify,
+	Railway: SiRailway,
+	Nitro: FiZap,
+};
+
+const MON_ICONS: Record<string, React.ElementType> = {
+	Sentry: SiSentry,
+};
+
+const TOOL_ICONS: Record<string, React.ElementType> = {
+	Storybook: SiStorybook,
+	Biome: FiZap,
+	ESLint: SiEslint,
+	T3Env: FiSettings,
+	Compiler: FiTerminal,
+};
 
 export function AddonsConfig() {
 	const store = useStackStore();
@@ -33,23 +87,27 @@ export function AddonsConfig() {
 						"Neon",
 						"Prisma",
 						"Strapi",
-					].map((item) => (
-						<Button
-							key={item}
-							size="sm"
-							variant={
-								store.integrations.includes(item) ? "default" : "outline"
-							}
-							onClick={() => store.toggleIntegration(item)}
-							className={`justify-start h-10 rounded-lg transition-all border text-xs ${
-								store.integrations.includes(item)
-									? "ring-1 ring-primary/20 shadow-sm bg-primary/10 text-primary hover:bg-primary/20"
-									: "bg-muted/30 hover:bg-muted/50"
-							}`}
-						>
-							<span className="font-medium">{item}</span>
-						</Button>
-					))}
+					].map((item) => {
+						const Icon = INT_ICONS[item] || FiGrid;
+						return (
+							<Button
+								key={item}
+								size="sm"
+								variant={
+									store.integrations.includes(item) ? "default" : "outline"
+								}
+								onClick={() => store.toggleIntegration(item)}
+								className={`justify-start gap-2 h-10 rounded-lg transition-all border text-xs ${
+									store.integrations.includes(item)
+										? "ring-1 ring-primary/20 shadow-sm bg-primary/10 text-primary hover:bg-primary/20"
+										: "bg-muted/30 hover:bg-muted/50"
+								}`}
+							>
+								<Icon className="w-3 h-3 shrink-0" />
+								<span className="font-medium">{item}</span>
+							</Button>
+						);
+					})}
 				</div>
 			</div>
 
@@ -69,20 +127,24 @@ export function AddonsConfig() {
 					</div>
 				</div>
 				<div className="grid grid-cols-2 gap-3 ml-12 w-[calc(100%-3rem)]">
-					{["Cloudflare", "Netlify", "Railway", "Nitro"].map((dep) => (
-						<Button
-							key={dep}
-							variant={store.deployment === dep ? "default" : "outline"}
-							onClick={() => store.setDeployment(dep as any)}
-							className={`justify-start h-12 rounded-xl transition-all border ${
-								store.deployment === dep
-									? "ring-2 ring-primary/20 shadow-md"
-									: "hover:bg-muted/50"
-							}`}
-						>
-							<span className="font-medium text-sm">{dep}</span>
-						</Button>
-					))}
+					{["Cloudflare", "Netlify", "Railway", "Nitro"].map((dep) => {
+						const Icon = DEP_ICONS[dep] || FiSend;
+						return (
+							<Button
+								key={dep}
+								variant={store.deployment === dep ? "default" : "outline"}
+								onClick={() => store.setDeployment(dep as any)}
+								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
+									store.deployment === dep
+										? "ring-2 ring-primary/20 shadow-md"
+										: "hover:bg-muted/50"
+								}`}
+							>
+								<Icon className="w-5 h-5 shrink-0" />
+								<span className="font-medium text-sm">{dep}</span>
+							</Button>
+						);
+					})}
 				</div>
 			</div>
 
@@ -102,20 +164,24 @@ export function AddonsConfig() {
 					</div>
 				</div>
 				<div className="grid grid-cols-2 gap-3 ml-12 w-[calc(100%-3rem)]">
-					{["Sentry"].map((mon) => (
-						<Button
-							key={mon}
-							variant={store.monitoring === mon ? "default" : "outline"}
-							onClick={() => store.setMonitoring(mon as any)}
-							className={`justify-start h-12 rounded-xl transition-all border ${
-								store.monitoring === mon
-									? "ring-2 ring-primary/20 shadow-md"
-									: "hover:bg-muted/50"
-							}`}
-						>
-							<span className="font-medium text-sm">{mon}</span>
-						</Button>
-					))}
+					{["Sentry"].map((mon) => {
+						const Icon = MON_ICONS[mon] || FiActivity;
+						return (
+							<Button
+								key={mon}
+								variant={store.monitoring === mon ? "default" : "outline"}
+								onClick={() => store.setMonitoring(mon as any)}
+								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
+									store.monitoring === mon
+										? "ring-2 ring-primary/20 shadow-md"
+										: "hover:bg-muted/50"
+								}`}
+							>
+								<Icon className="w-5 h-5 shrink-0" />
+								<span className="font-medium text-sm">{mon}</span>
+							</Button>
+						);
+					})}
 				</div>
 			</div>
 
@@ -128,7 +194,9 @@ export function AddonsConfig() {
 						<FiGlobe className="h-5 w-5" />
 					</div>
 					<div className="space-y-1">
-						<Label className="text-base font-semibold">Internationalization (i18n)</Label>
+						<Label className="text-base font-semibold">
+							Internationalization (i18n)
+						</Label>
 						<div className="text-sm text-muted-foreground leading-snug">
 							Ensure your application is globally accessible and translated.
 						</div>
@@ -140,12 +208,13 @@ export function AddonsConfig() {
 							key={i1}
 							variant={store.i18n === i1 ? "default" : "outline"}
 							onClick={() => store.setI18n(i1 as any)}
-							className={`justify-start h-12 rounded-xl transition-all border ${
+							className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
 								store.i18n === i1
 									? "ring-2 ring-primary/20 shadow-md"
 									: "hover:bg-muted/50"
 							}`}
 						>
+							<FiMessageCircle className="w-5 h-5 shrink-0" />
 							<span className="font-medium text-sm">{i1}</span>
 						</Button>
 					))}
@@ -168,21 +237,27 @@ export function AddonsConfig() {
 					</div>
 				</div>
 				<div className="grid grid-cols-2 gap-3 ml-12 w-[calc(100%-3rem)]">
-					{["Storybook", "Biome", "ESLint", "T3Env", "Compiler"].map((tool) => (
-						<Button
-							key={tool}
-							size="sm"
-							variant={store.devTooling.includes(tool) ? "default" : "outline"}
-							onClick={() => store.toggleDevTooling(tool)}
-							className={`justify-start h-10 rounded-lg transition-all border text-xs ${
-								store.devTooling.includes(tool)
-									? "ring-1 ring-primary/20 shadow-sm bg-primary/10 text-primary hover:bg-primary/20"
-									: "bg-muted/30 hover:bg-muted/50"
-							}`}
-						>
-							<span className="font-medium">{tool}</span>
-						</Button>
-					))}
+					{["Storybook", "Biome", "ESLint", "T3Env", "Compiler"].map((tool) => {
+						const Icon = TOOL_ICONS[tool] || FiTool;
+						return (
+							<Button
+								key={tool}
+								size="sm"
+								variant={
+									store.devTooling.includes(tool) ? "default" : "outline"
+								}
+								onClick={() => store.toggleDevTooling(tool)}
+								className={`justify-start gap-2 h-10 rounded-lg transition-all border text-xs ${
+									store.devTooling.includes(tool)
+										? "ring-1 ring-primary/20 shadow-sm bg-primary/10 text-primary hover:bg-primary/20"
+										: "bg-muted/30 hover:bg-muted/50"
+								}`}
+							>
+								<Icon className="w-3 h-3 shrink-0" />
+								<span className="font-medium">{tool}</span>
+							</Button>
+						);
+					})}
 				</div>
 			</div>
 		</div>

@@ -2,15 +2,48 @@ import { useStackStore } from "@/store/create-stack";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { SiNextdotjs, SiVite, SiReactrouter, SiAstro, SiLaravel } from "react-icons/si";
-import { FiLayout, FiSidebar, FiDroplet, FiZap, FiPackage } from "react-icons/fi";
+import {
+	SiNextdotjs,
+	SiVite,
+	SiReactrouter,
+	SiAstro,
+	SiLaravel,
+	SiReact,
+	SiSolid,
+} from "react-icons/si";
+import {
+	FiLayout,
+	FiSidebar,
+	FiDroplet,
+	FiZap,
+	FiPackage,
+	FiBox,
+	FiLayers,
+	FiAperture,
+	FiCircle,
+	FiStar,
+	FiAlignLeft,
+	FiCheckCircle,
+} from "react-icons/fi";
 
 const FW_ICONS: Record<string, React.ElementType> = {
 	"Next.js": SiNextdotjs,
 	Vite: SiVite,
+	"TanStack Start": FiZap,
 	"React Router": SiReactrouter,
 	Astro: SiAstro,
 	Laravel: SiLaravel,
+};
+
+const UI_ICONS: Record<string, React.ElementType> = {
+	"shadcn/ui": FiLayout,
+	"Base UI": FiBox,
+	"Radix primitives": FiLayers,
+};
+
+const RT_ICONS: Record<string, React.ElementType> = {
+	React: SiReact,
+	Solid: SiSolid,
 };
 
 export function FrontendConfig() {
@@ -40,7 +73,7 @@ export function FrontendConfig() {
 						"Astro",
 						"Laravel",
 					].map((fw) => {
-						const Icon = FW_ICONS[fw];
+						const Icon = FW_ICONS[fw] || FiPackage;
 						return (
 							<Button
 								key={fw}
@@ -52,7 +85,7 @@ export function FrontendConfig() {
 										: "hover:bg-muted/50"
 								}`}
 							>
-								{Icon && <Icon className="w-5 h-5 shrink-0" />}
+								<Icon className="w-5 h-5 shrink-0" />
 								<span className="font-medium text-sm">{fw}</span>
 							</Button>
 						);
@@ -76,20 +109,24 @@ export function FrontendConfig() {
 					</div>
 				</div>
 				<div className="grid grid-cols-2 gap-3 ml-12 w-[calc(100%-3rem)]">
-					{["shadcn/ui", "Base UI", "Radix primitives"].map((ui) => (
-						<Button
-							key={ui}
-							variant={store.uiSystem === ui ? "default" : "outline"}
-							onClick={() => store.setUiSystem(ui as any)}
-							className={`justify-start h-12 rounded-xl transition-all border ${
-								store.uiSystem === ui
-									? "ring-2 ring-primary/20 shadow-md"
-									: "hover:bg-muted/50"
-							}`}
-						>
-							<span className="font-medium text-sm">{ui}</span>
-						</Button>
-					))}
+					{["shadcn/ui", "Base UI", "Radix primitives"].map((ui) => {
+						const Icon = UI_ICONS[ui] || FiBox;
+						return (
+							<Button
+								key={ui}
+								variant={store.uiSystem === ui ? "default" : "outline"}
+								onClick={() => store.setUiSystem(ui as any)}
+								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
+									store.uiSystem === ui
+										? "ring-2 ring-primary/20 shadow-md"
+										: "hover:bg-muted/50"
+								}`}
+							>
+								<Icon className="w-4 h-4 shrink-0" />
+								<span className="font-medium text-sm">{ui}</span>
+							</Button>
+						);
+					})}
 				</div>
 			</div>
 
@@ -110,16 +147,19 @@ export function FrontendConfig() {
 				</div>
 				<div className="space-y-6 ml-12 w-[calc(100%-3rem)] mt-4">
 					<div className="space-y-3">
-						<div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Theme Style</div>
+						<div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+							Theme Style
+						</div>
 						<div className="flex flex-wrap gap-2">
 							{["Vega", "Nova", "Mala", "Lyra", "Mira", "Luma"].map((theme) => (
 								<Button
 									key={theme}
 									size="sm"
-									variant={store.themeStyle === theme ? "default" : "secondary"}
+									variant={store.themeStyle === theme ? "default" : "outline"}
 									onClick={() => store.setThemeStyle(theme)}
-									className={`rounded-lg ${store.themeStyle === theme ? "shadow-sm" : "bg-muted/60"}`}
+									className={`rounded-lg gap-2 ${store.themeStyle === theme ? "shadow-sm" : "hover:bg-muted/50"}`}
 								>
+									<FiAperture className="w-3 h-3" />
 									{theme}
 								</Button>
 							))}
@@ -127,17 +167,20 @@ export function FrontendConfig() {
 					</div>
 
 					<div className="space-y-3">
-						<div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Base Colors</div>
+						<div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+							Base Colors
+						</div>
 						<div className="flex flex-wrap gap-2">
 							{["Neutral", "Stone", "Zinc", "Mauve", "Mist", "Olive", "Taupe"].map(
 								(color) => (
 									<Button
 										key={color}
 										size="sm"
-										variant={store.baseColor === color ? "default" : "secondary"}
+										variant={store.baseColor === color ? "default" : "outline"}
 										onClick={() => store.setBaseColor(color)}
-										className={`rounded-lg ${store.baseColor === color ? "shadow-sm" : "bg-muted/60"}`}
+										className={`rounded-lg gap-2 ${store.baseColor === color ? "shadow-sm" : "hover:bg-muted/50"}`}
 									>
+										<FiDroplet className="w-3 h-3" />
 										{color}
 									</Button>
 								),
@@ -146,16 +189,19 @@ export function FrontendConfig() {
 					</div>
 
 					<div className="space-y-3">
-						<div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Border Radius</div>
+						<div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+							Border Radius
+						</div>
 						<div className="flex flex-wrap gap-2">
 							{["Default", "None", "Small", "Medium", "Large"].map((radius) => (
 								<Button
 									key={radius}
 									size="sm"
-									variant={store.borderRadius === radius ? "default" : "secondary"}
+									variant={store.borderRadius === radius ? "default" : "outline"}
 									onClick={() => store.setBorderRadius(radius)}
-									className={`rounded-lg ${store.borderRadius === radius ? "shadow-sm" : "bg-muted/60"}`}
+									className={`rounded-lg gap-2 ${store.borderRadius === radius ? "shadow-sm" : "hover:bg-muted/50"}`}
 								>
+									<FiCircle className="w-3 h-3" />
 									{radius}
 								</Button>
 							))}
@@ -163,7 +209,9 @@ export function FrontendConfig() {
 					</div>
 
 					<div className="space-y-3">
-						<div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Icon Library</div>
+						<div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+							Icon Library
+						</div>
 						<div className="flex flex-wrap gap-2">
 							{[
 								"Lucide",
@@ -175,10 +223,11 @@ export function FrontendConfig() {
 								<Button
 									key={icon}
 									size="sm"
-									variant={store.iconLibrary === icon ? "default" : "secondary"}
+									variant={store.iconLibrary === icon ? "default" : "outline"}
 									onClick={() => store.setIconLibrary(icon)}
-									className={`rounded-lg ${store.iconLibrary === icon ? "shadow-sm" : "bg-muted/60"}`}
+									className={`rounded-lg gap-2 ${store.iconLibrary === icon ? "shadow-sm" : "hover:bg-muted/50"}`}
 								>
+									<FiStar className="w-3 h-3" />
 									{icon}
 								</Button>
 							))}
@@ -186,17 +235,20 @@ export function FrontendConfig() {
 					</div>
 
 					<div className="space-y-3">
-						<div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Fonts</div>
+						<div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+							Fonts
+						</div>
 						<div className="flex flex-wrap gap-2">
 							{["Inter", "Geist", "Manrope", "Satoshi", "Plus Jakarta Sans"].map(
 								(font) => (
 									<Button
 										key={font}
 										size="sm"
-										variant={store.font === font ? "default" : "secondary"}
+										variant={store.font === font ? "default" : "outline"}
 										onClick={() => store.setFont(font)}
-										className={`rounded-lg ${store.font === font ? "shadow-sm" : "bg-muted/60"}`}
+										className={`rounded-lg gap-2 ${store.font === font ? "shadow-sm" : "hover:bg-muted/50"}`}
 									>
+										<FiAlignLeft className="w-3 h-3" />
 										{font}
 									</Button>
 								),
@@ -225,6 +277,7 @@ export function FrontendConfig() {
 					<div className="grid grid-cols-2 gap-3">
 						{["React", "Solid"].map((rt) => {
 							const disabled = rt === "Solid" && store.framework === "Next.js";
+							const Icon = RT_ICONS[rt] || FiZap;
 							return (
 								<Button
 									key={rt}
@@ -232,12 +285,13 @@ export function FrontendConfig() {
 									disabled={disabled}
 									onClick={() => store.setRuntime(rt as any)}
 									title={disabled ? "Solid cannot be used with Next.js" : ""}
-									className={`justify-start h-12 rounded-xl transition-all border ${
+									className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
 										store.runtime === rt
 											? "ring-2 ring-primary/20 shadow-md"
 											: "hover:bg-muted/50"
 									}`}
 								>
+									<Icon className="w-4 h-4 shrink-0" />
 									<span className="font-medium text-sm">{rt}</span>
 								</Button>
 							);
@@ -282,12 +336,13 @@ export function FrontendConfig() {
 								store.tanstackPackages.includes(pkg) ? "default" : "outline"
 							}
 							onClick={() => store.toggleTanstackPackage(pkg)}
-							className={`justify-start h-10 rounded-lg transition-all border text-xs ${
+							className={`justify-start gap-2 h-10 rounded-lg transition-all border text-xs ${
 								store.tanstackPackages.includes(pkg)
 									? "ring-1 ring-primary/20 shadow-sm bg-primary/10 text-primary hover:bg-primary/20"
-									: "bg-muted/30"
+									: "bg-muted/30 hover:bg-muted/50"
 							}`}
 						>
+							<FiCheckCircle className="w-3 h-3 shrink-0" />
 							<span className="font-medium">{pkg}</span>
 						</Button>
 					))}

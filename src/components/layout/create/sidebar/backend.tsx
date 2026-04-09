@@ -2,7 +2,47 @@ import { useStackStore } from "@/store/create-stack";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { FiDatabase, FiLayers, FiLock, FiCloud } from "react-icons/fi";
+import {
+	SiPrisma,
+	SiDrizzle,
+	SiClerk,
+	SiApollographql,
+	SiTrpc,
+} from "react-icons/si";
+import {
+	FiDatabase,
+	FiLayers,
+	FiLock,
+	FiCloud,
+	FiZap,
+	FiShield,
+	FiRepeat,
+	FiCode,
+	FiUserCheck,
+} from "react-icons/fi";
+
+const DB_ICONS: Record<string, React.ElementType> = {
+	Neon: FiDatabase, // SiNeon doesn't always exist, fallback to FiDatabase
+	Convex: FiZap,
+};
+
+const ORM_ICONS: Record<string, React.ElementType> = {
+	Prisma: SiPrisma,
+	Drizzle: SiDrizzle,
+};
+
+const AUTH_ICONS: Record<string, React.ElementType> = {
+	WorkOS: FiUserCheck,
+	Clerk: SiClerk,
+	BetterAuth: FiShield,
+};
+
+const API_ICONS: Record<string, React.ElementType> = {
+	MCP: FiCode,
+	ORPC: FiRepeat,
+	tRPC: SiTrpc,
+	"Apollo Client": SiApollographql,
+};
 
 export function BackendConfig() {
 	const store = useStackStore();
@@ -22,20 +62,24 @@ export function BackendConfig() {
 					</div>
 				</div>
 				<div className="grid grid-cols-2 gap-3 ml-12 w-[calc(100%-3rem)]">
-					{["Neon", "Convex"].map((db) => (
-						<Button
-							key={db}
-							variant={store.database === db ? "default" : "outline"}
-							onClick={() => store.setDatabase(db as any)}
-							className={`justify-start h-12 rounded-xl transition-all border ${
-								store.database === db
-									? "ring-2 ring-primary/20 shadow-md"
-									: "hover:bg-muted/50"
-							}`}
-						>
-							<span className="font-medium text-sm">{db}</span>
-						</Button>
-					))}
+					{["Neon", "Convex"].map((db) => {
+						const Icon = DB_ICONS[db] || FiDatabase;
+						return (
+							<Button
+								key={db}
+								variant={store.database === db ? "default" : "outline"}
+								onClick={() => store.setDatabase(db as any)}
+								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
+									store.database === db
+										? "ring-2 ring-primary/20 shadow-md"
+										: "hover:bg-muted/50"
+								}`}
+							>
+								<Icon className="w-5 h-5 shrink-0" />
+								<span className="font-medium text-sm">{db}</span>
+							</Button>
+						);
+					})}
 				</div>
 			</div>
 
@@ -55,20 +99,24 @@ export function BackendConfig() {
 					</div>
 				</div>
 				<div className="grid grid-cols-2 gap-3 ml-12 w-[calc(100%-3rem)]">
-					{["Prisma", "Drizzle"].map((orm) => (
-						<Button
-							key={orm}
-							variant={store.orm === orm ? "default" : "outline"}
-							onClick={() => store.setOrm(orm as any)}
-							className={`justify-start h-12 rounded-xl transition-all border ${
-								store.orm === orm
-									? "ring-2 ring-primary/20 shadow-md"
-									: "hover:bg-muted/50"
-							}`}
-						>
-							<span className="font-medium text-sm">{orm}</span>
-						</Button>
-					))}
+					{["Prisma", "Drizzle"].map((orm) => {
+						const Icon = ORM_ICONS[orm] || FiLayers;
+						return (
+							<Button
+								key={orm}
+								variant={store.orm === orm ? "default" : "outline"}
+								onClick={() => store.setOrm(orm as any)}
+								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
+									store.orm === orm
+										? "ring-2 ring-primary/20 shadow-md"
+										: "hover:bg-muted/50"
+								}`}
+							>
+								<Icon className="w-5 h-5 shrink-0" />
+								<span className="font-medium text-sm">{orm}</span>
+							</Button>
+						);
+					})}
 				</div>
 			</div>
 
@@ -88,20 +136,24 @@ export function BackendConfig() {
 					</div>
 				</div>
 				<div className="grid grid-cols-2 gap-3 ml-12 w-[calc(100%-3rem)]">
-					{["WorkOS", "Clerk", "BetterAuth"].map((auth) => (
-						<Button
-							key={auth}
-							variant={store.auth === auth ? "default" : "outline"}
-							onClick={() => store.setAuth(auth as any)}
-							className={`justify-start h-12 rounded-xl transition-all border ${
-								store.auth === auth
-									? "ring-2 ring-primary/20 shadow-md"
-									: "hover:bg-muted/50"
-							}`}
-						>
-							<span className="font-medium text-sm">{auth}</span>
-						</Button>
-					))}
+					{["WorkOS", "Clerk", "BetterAuth"].map((auth) => {
+						const Icon = AUTH_ICONS[auth] || FiLock;
+						return (
+							<Button
+								key={auth}
+								variant={store.auth === auth ? "default" : "outline"}
+								onClick={() => store.setAuth(auth as any)}
+								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
+									store.auth === auth
+										? "ring-2 ring-primary/20 shadow-md"
+										: "hover:bg-muted/50"
+								}`}
+							>
+								<Icon className="w-5 h-5 shrink-0" />
+								<span className="font-medium text-sm">{auth}</span>
+							</Button>
+						);
+					})}
 				</div>
 			</div>
 
@@ -121,20 +173,24 @@ export function BackendConfig() {
 					</div>
 				</div>
 				<div className="grid grid-cols-2 gap-3 ml-12 w-[calc(100%-3rem)]">
-					{["MCP", "ORPC", "tRPC", "Apollo Client"].map((api) => (
-						<Button
-							key={api}
-							variant={store.apiLayer === api ? "default" : "outline"}
-							onClick={() => store.setApiLayer(api as any)}
-							className={`justify-start h-12 rounded-xl transition-all border ${
-								store.apiLayer === api
-									? "ring-2 ring-primary/20 shadow-md"
-									: "hover:bg-muted/50"
-							}`}
-						>
-							<span className="font-medium text-sm">{api}</span>
-						</Button>
-					))}
+					{["MCP", "ORPC", "tRPC", "Apollo Client"].map((api) => {
+						const Icon = API_ICONS[api] || FiCloud;
+						return (
+							<Button
+								key={api}
+								variant={store.apiLayer === api ? "default" : "outline"}
+								onClick={() => store.setApiLayer(api as any)}
+								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
+									store.apiLayer === api
+										? "ring-2 ring-primary/20 shadow-md"
+										: "hover:bg-muted/50"
+								}`}
+							>
+								<Icon className="w-5 h-5 shrink-0" />
+								<span className="font-medium text-sm">{api}</span>
+							</Button>
+						);
+					})}
 				</div>
 			</div>
 		</div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FiSettings, FiMonitor, FiServer, FiBox, FiChevronRight, FiCheck } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,13 @@ const CATEGORY_ICONS: Record<Category, React.ElementType> = {
 
 export function Sidebar() {
 	const [activeTab, setActiveTab] = useState<Category>("General");
+	const scrollRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (scrollRef.current) {
+			scrollRef.current.scrollTop = 0;
+		}
+	}, [activeTab]);
 
 	const activeIndex = CATEGORIES.indexOf(activeTab);
 	const hasNext = activeIndex < CATEGORIES.length - 1;
@@ -59,7 +66,7 @@ export function Sidebar() {
 			</div>
 
 			{/* Content Scrollable Area */}
-			<div className="flex-1 overflow-y-auto p-4 pt-0 custom-scrollbar relative">
+			<div ref={scrollRef} className="flex-1 overflow-y-auto p-4 pt-0 custom-scrollbar relative scroll-smooth">
 				<div className="min-h-full flex flex-col">
 					<div className="flex-1">
 						{activeTab === "General" && <GeneralConfig />}
