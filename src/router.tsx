@@ -1,11 +1,11 @@
+import {
+	defaultShouldDehydrateQuery,
+	QueryClient,
+} from "@tanstack/react-query";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
-import { routeTree } from "./routeTree.gen";
-
-import type { ReactNode } from "react";
-import { QueryClient, defaultShouldDehydrateQuery } from "@tanstack/react-query";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 import superjson from "superjson";
-import TanstackQueryProvider from "./integrations/tanstack-query/root-provider";
+import { routeTree } from "./routeTree.gen";
 
 export function getRouter() {
 	const queryClient = new QueryClient({

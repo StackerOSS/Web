@@ -19,50 +19,59 @@ const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getIte
 export const Route = createRootRouteWithContext<MyRouterContext>()({
 	head: () => ({
 		meta: [
-			{
-				charSet: "utf-8",
-			},
-			{
-				name: "viewport",
-				content: "width=device-width, initial-scale=1",
-			},
-			{
-				title: "Stacker - Build Your Stack Instantly",
-			},
+			{ charSet: "utf-8" },
+			{ name: "viewport", content: "width=device-width, initial-scale=1" },
+			{ title: "Stacker — Visually Build & Ship Your Full-Stack in Seconds" },
 			{
 				name: "description",
-				content: "Visually generate your perfect web development stack.",
+				content:
+					"Stacker is an open-source stack builder that lets you visually configure your entire web stack — framework, UI, database, auth, ORM & more — then scaffold it instantly with a single CLI command.",
 			},
 			{
+				name: "keywords",
+				content:
+					"stacker, stack builder, web stack generator, full-stack scaffold, Next.js, Vite, TanStack, shadcn, CLI, project generator, ranveer soni",
+			},
+			{ name: "author", content: "Ranveer Soni" },
+			{ name: "robots", content: "index, follow" },
+			{ name: "theme-color", content: "#0a0a0a" },
+
+			/* Open Graph */
+			{ property: "og:type", content: "website" },
+			{ property: "og:url", content: "https://stacker.ranveersoni.me" },
+			{ property: "og:site_name", content: "Stacker" },
+			{
 				property: "og:title",
-				content: "Stacker - Build Your Stack Instantly",
+				content: "Stacker — Visually Build & Ship Your Full-Stack in Seconds",
 			},
 			{
 				property: "og:description",
-				content: "Visually generate your perfect web development stack.",
+				content:
+					"Configure your entire web stack visually — framework, UI, database, auth & more — then scaffold it with one CLI command.",
+			},
+			{ property: "og:image", content: "https://stacker.ranveersoni.me/og.png" },
+			{ property: "og:image:width", content: "1200" },
+			{ property: "og:image:height", content: "630" },
+			{ property: "og:locale", content: "en_US" },
+
+			/* Twitter */
+			{ name: "twitter:card", content: "summary_large_image" },
+			{
+				name: "twitter:title",
+				content: "Stacker — Visually Build & Ship Your Full-Stack in Seconds",
 			},
 			{
-				property: "og:image",
-				content: "/og.png",
+				name: "twitter:description",
+				content:
+					"Configure your entire web stack visually and scaffold it with a single CLI command.",
 			},
-			{
-				name: "twitter:card",
-				content: "summary_large_image",
-			},
-			{
-				name: "twitter:image",
-				content: "/og.png",
-			},
+			{ name: "twitter:image", content: "https://stacker.ranveersoni.me/og.png" },
 		],
 		links: [
-			{
-				rel: "icon",
-				href: "/logo.png",
-			},
-			{
-				rel: "stylesheet",
-				href: appCss,
-			},
+			{ rel: "icon", href: "/logo.png" },
+			{ rel: "apple-touch-icon", href: "/logo.png" },
+			{ rel: "canonical", href: "https://stacker.ranveersoni.me" },
+			{ rel: "stylesheet", href: appCss },
 		],
 	}),
 	shellComponent: RootDocument,
@@ -80,7 +89,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
 				<HeadContent />
 			</head>
-			<body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
+			<body
+				suppressHydrationWarning
+				className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]"
+			>
 				{children}
 				<TanStackDevtools
 					config={{

@@ -6,17 +6,19 @@ export const StackSchema = type({
 	git: "boolean",
 	install: "boolean",
 
-	framework: "'Next.js' | 'Vite' | 'TanStack Start' | 'React Router' | 'Astro' | 'Laravel' | ''",
+	framework:
+		"'Next.js' | 'Vite' | 'TanStack Start' | 'React Router' | 'Astro' | 'Laravel' | ''",
 	uiSystem: "'shadcn/ui' | 'Base UI' | 'Radix primitives' | ''",
-	themeStyle: "string",
+	themeStyle:
+		"'vega' | 'nova' | 'maia' | 'lyra' | 'mira' | 'luma' | 'new-york' | 'default'",
 	baseColor: "string",
-	borderRadius: "string",
+	borderRadius: "'default' | 'none' | 'sm' | 'md' | 'lg'",
 	iconLibrary: "string",
 	font: "string",
 
 	runtime: "'React' | 'Solid' | ''",
 	tanstackPackages: "string[]",
-	
+
 	database: "'Neon' | 'Convex' | ''",
 	orm: "'Prisma' | 'Drizzle' | ''",
 	auth: "'WorkOS' | 'Clerk' | 'BetterAuth' | ''",
@@ -29,7 +31,7 @@ export const StackSchema = type({
 	devTooling: "string[]",
 
 	typings: "'Zod' | 'ArkType' | ''",
-	animations: "'Framer Motion' | 'Motion' | 'AutoAnimate' | 'GSAP' | ''"
+	animations: "'Framer Motion' | 'Motion' | 'AutoAnimate' | 'GSAP' | ''",
 });
 
 export type StackConfig = typeof StackSchema.infer;

@@ -1,36 +1,42 @@
-import { useStackStore } from "@/store/create-stack";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import {
-	SiCloudflare,
-	SiNetlify,
-	SiRailway,
-	SiSentry,
-	SiClerk,
-	SiStrapi,
-	SiStorybook,
-	SiEslint,
-	SiGreensock,
-} from "react-icons/si";
-import {
-	FiGrid,
-	FiSend,
 	FiActivity,
-	FiGlobe,
-	FiTool,
-	FiUserCheck,
 	FiDatabase,
-	FiZap,
+	FiFramer,
+	FiGlobe,
+	FiGrid,
 	FiMessageCircle,
+	FiPackage,
+	FiSend,
 	FiSettings,
 	FiTerminal,
+	FiTool,
 	FiType,
-	FiCheckSquare,
+	FiUserCheck,
 	FiVideo,
-	FiFramer,
-	FiWind
+	FiWind,
+	FiX,
+	FiZap,
 } from "react-icons/fi";
+import {
+	SiClerk,
+	SiCloudflare,
+	SiEslint,
+	SiGreensock,
+	SiNetlify,
+	SiPrisma,
+	SiRailway,
+	SiSentry,
+	SiStorybook,
+	SiStrapi,
+} from "react-icons/si";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { getInitCommand } from "@/lib/stacker";
+import { type StackState, useStackStore } from "@/store/create-stack";
 
 const INT_ICONS: Record<string, React.ElementType> = {
 	Cloudflare: SiCloudflare,
@@ -51,10 +57,6 @@ const DEP_ICONS: Record<string, React.ElementType> = {
 	Nitro: FiZap,
 };
 
-const MON_ICONS: Record<string, React.ElementType> = {
-	Sentry: SiSentry,
-};
-
 const TOOL_ICONS: Record<string, React.ElementType> = {
 	Storybook: SiStorybook,
 	Biome: FiZap,
@@ -64,11 +66,150 @@ const TOOL_ICONS: Record<string, React.ElementType> = {
 };
 
 export function AddonsConfig() {
-	const store = useStackStore();
+	const addPackage = useStackStore((state) => state.addPackage);
+	const packages = useStackStore((state) => state.packages);
+	const removePackage = useStackStore((state) => state.removePackage);
+	const integrations = useStackStore((state) => state.integrations);
+	const toggleIntegration = useStackStore((state) => state.toggleIntegration);
+	const deployment = useStackStore((state) => state.deployment);
+	const setDeployment = useStackStore((state) => state.setDeployment);
+	const monitoring = useStackStore((state) => state.monitoring);
+	const setMonitoring = useStackStore((state) => state.setMonitoring);
+	const i18n = useStackStore((state) => state.i18n);
+	const setI18n = useStackStore((state) => state.setI18n);
+	const devTooling = useStackStore((state) => state.devTooling);
+	const toggleDevTooling = useStackStore((state) => state.toggleDevTooling);
+	const typings = useStackStore((state) => state.typings);
+	const setTypings = useStackStore((state) => state.setTypings);
+	const animations = useStackStore((state) => state.animations);
+	const setAnimations = useStackStore((state) => state.setAnimations);
+	const templateId = useStackStore((state) => state.templateId);
+	const [query, setQuery] = useState("");
+	const [results, setResults] = useState<
+		Array<{ name: string; description: string }>
+	>([]);
+	const [loading, setLoading] = useState(false);
+
+	const copyInitCommand = () => {
+		void navigator.clipboard.writeText(getInitCommand(templateId));
+	};
+
+	const addPackageFromSearch = (name: string) => {
+		addPackage(name);
+		copyInitCommand();
+		setQuery("");
+		setResults([]);
+		setLoading(false);
+	};
+
+	useEffect(() => {
+		if (query.trim().length < 2) {
+			setResults([]);
+			return;
+		}
+
+		const controller = new AbortController();
+		const timeout = setTimeout(async () => {
+			setLoading(true);
+			try {
+				const response = await fetch(
+					`/api/npm-search?q=${encodeURIComponent(query)}`,
+					{
+						signal: controller.signal,
+					},
+				);
+				const data = await response.json();
+				setResults(data.packages ?? []);
+			} catch {
+				setResults([]);
+			} finally {
+				setLoading(false);
+			}
+		}, 250);
+
+		return () => {
+			controller.abort();
+			clearTimeout(timeout);
+		};
+	}, [query]);
 
 	return (
 		<div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300 pb-8">
-			{/* Integrations */}
+			<div className="space-y-4">
+				<div className="flex gap-3">
+					<div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+						<FiPackage className="h-5 w-5" />
+					</div>
+					<div className="space-y-1">
+						<Label className="text-base font-semibold">Extra Packages</Label>
+						<div className="text-sm text-muted-foreground leading-snug">
+							Search npm packages and add them directly to the generated install
+							plan.
+						</div>
+					</div>
+				</div>
+				<div className="ml-12 w-[calc(100%-3rem)] space-y-3">
+					<Input
+						value={query}
+						onChange={(event) => setQuery(event.target.value)}
+						placeholder="Search npm packages"
+						className="h-11"
+					/>
+					<div className="rounded-xl border bg-muted/20">
+						{loading ? (
+							<div className="p-3 text-sm text-muted-foreground">
+								Searching npm...
+							</div>
+						) : results.length > 0 ? (
+							<div className="divide-y">
+								{results.map((item) => (
+									<button
+										type="button"
+										key={item.name}
+										onClick={() => addPackageFromSearch(item.name)}
+										className="flex w-full items-start justify-between gap-4 p-3 text-left hover:bg-muted/40"
+									>
+										<div>
+											<div className="font-medium">{item.name}</div>
+											<div className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+												{item.description || "No package description provided."}
+											</div>
+										</div>
+										<Badge variant="outline">Add</Badge>
+									</button>
+								))}
+							</div>
+						) : (
+							<div className="p-3 text-sm text-muted-foreground">
+								Type at least two characters to search the npm registry.
+							</div>
+						)}
+					</div>
+					<div className="flex flex-wrap gap-2">
+						{packages.map((pkg) => (
+							<div
+								key={pkg}
+								className="group inline-flex max-w-full min-w-0 items-center rounded-full border bg-background text-xs font-medium shadow-sm transition-[border-color,box-shadow] hover:border-border/80 hover:bg-muted/30"
+							>
+								<span className="truncate py-1 pl-3 pr-3 transition-[padding] duration-200 ease-out group-hover:pr-1 group-focus-within:pr-1">
+									{pkg}
+								</span>
+								<button
+									type="button"
+									onClick={() => removePackage(pkg)}
+									className="inline-flex h-7 w-0 shrink-0 items-center justify-center overflow-hidden rounded-r-full text-muted-foreground opacity-0 transition-[width,opacity] duration-200 ease-out hover:bg-destructive/15 hover:text-destructive focus-visible:w-7 focus-visible:opacity-100 group-hover:w-7 group-hover:opacity-100"
+									aria-label={`Remove ${pkg}`}
+								>
+									<FiX className="h-3.5 w-3.5 shrink-0" strokeWidth={2.5} />
+								</button>
+							</div>
+						))}
+					</div>
+				</div>
+			</div>
+
+			<Separator className="ml-12 w-[calc(100%-3rem)]" />
+
 			<div className="space-y-4">
 				<div className="flex gap-3">
 					<div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -77,7 +218,7 @@ export function AddonsConfig() {
 					<div className="space-y-1">
 						<Label className="text-base font-semibold">Integrations</Label>
 						<div className="text-sm text-muted-foreground leading-snug">
-							Select third-party tools to pre-configure and wire into your stack.
+							Third-party services you want baked into the scaffold plan.
 						</div>
 					</div>
 				</div>
@@ -98,12 +239,13 @@ export function AddonsConfig() {
 							<Button
 								key={item}
 								size="sm"
-								variant={
-									store.integrations.includes(item) ? "default" : "outline"
-								}
-								onClick={() => store.toggleIntegration(item)}
+								variant={integrations.includes(item) ? "default" : "outline"}
+								onClick={() => {
+									toggleIntegration(item);
+									copyInitCommand();
+								}}
 								className={`justify-start gap-2 h-10 rounded-lg transition-all border text-xs ${
-									store.integrations.includes(item)
+									integrations.includes(item)
 										? "ring-1 ring-primary/20 shadow-sm bg-primary/10 text-primary hover:bg-primary/20"
 										: "bg-muted/30 hover:bg-muted/50"
 								}`}
@@ -118,7 +260,6 @@ export function AddonsConfig() {
 
 			<Separator className="ml-12 w-[calc(100%-3rem)]" />
 
-			{/* Deployment */}
 			<div className="space-y-4">
 				<div className="flex gap-3">
 					<div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -127,7 +268,7 @@ export function AddonsConfig() {
 					<div className="space-y-1">
 						<Label className="text-base font-semibold">Deployment</Label>
 						<div className="text-sm text-muted-foreground leading-snug">
-							Target your infrastructure and configure build targets.
+							Target infrastructure for the scaffolded project.
 						</div>
 					</div>
 				</div>
@@ -137,13 +278,12 @@ export function AddonsConfig() {
 						return (
 							<Button
 								key={dep}
-								variant={store.deployment === dep ? "default" : "outline"}
-								onClick={() => store.setDeployment(dep as any)}
-								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
-									store.deployment === dep
-										? "ring-2 ring-primary/20 shadow-md"
-										: "hover:bg-muted/50"
-								}`}
+								variant={deployment === dep ? "default" : "outline"}
+								onClick={() => {
+									setDeployment(deployment === dep ? "" : dep);
+									copyInitCommand();
+								}}
+								className="justify-start gap-3 h-12 rounded-xl transition-all border"
 							>
 								<Icon className="w-5 h-5 shrink-0" />
 								<span className="font-medium text-sm">{dep}</span>
@@ -155,7 +295,6 @@ export function AddonsConfig() {
 
 			<Separator className="ml-12 w-[calc(100%-3rem)]" />
 
-			{/* Monitoring */}
 			<div className="space-y-4">
 				<div className="flex gap-3">
 					<div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -164,35 +303,27 @@ export function AddonsConfig() {
 					<div className="space-y-1">
 						<Label className="text-base font-semibold">Observability</Label>
 						<div className="text-sm text-muted-foreground leading-snug">
-							Analytics, error tracking, and performance monitoring tools.
+							Error tracking and monitoring.
 						</div>
 					</div>
 				</div>
 				<div className="grid grid-cols-2 gap-3 ml-12 w-[calc(100%-3rem)]">
-					{["Sentry"].map((mon) => {
-						const Icon = MON_ICONS[mon] || FiActivity;
-						return (
-							<Button
-								key={mon}
-								variant={store.monitoring === mon ? "default" : "outline"}
-								onClick={() => store.setMonitoring(mon as any)}
-								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
-									store.monitoring === mon
-										? "ring-2 ring-primary/20 shadow-md"
-										: "hover:bg-muted/50"
-								}`}
-							>
-								<Icon className="w-5 h-5 shrink-0" />
-								<span className="font-medium text-sm">{mon}</span>
-							</Button>
-						);
-					})}
+					<Button
+						variant={monitoring === "Sentry" ? "default" : "outline"}
+						onClick={() => {
+							setMonitoring(monitoring === "Sentry" ? "" : "Sentry");
+							copyInitCommand();
+						}}
+						className="justify-start gap-3 h-12 rounded-xl transition-all border"
+					>
+						<SiSentry className="w-5 h-5 shrink-0" />
+						<span className="font-medium text-sm">Sentry</span>
+					</Button>
 				</div>
 			</div>
 
 			<Separator className="ml-12 w-[calc(100%-3rem)]" />
 
-			{/* i18n */}
 			<div className="space-y-4">
 				<div className="flex gap-3">
 					<div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -200,35 +331,30 @@ export function AddonsConfig() {
 					</div>
 					<div className="space-y-1">
 						<Label className="text-base font-semibold">
-							Internationalization (i18n)
+							Internationalization
 						</Label>
 						<div className="text-sm text-muted-foreground leading-snug">
-							Ensure your application is globally accessible and translated.
+							Add translation support to the plan.
 						</div>
 					</div>
 				</div>
 				<div className="grid grid-cols-2 gap-3 ml-12 w-[calc(100%-3rem)]">
-					{["Paraglide"].map((i1) => (
-						<Button
-							key={i1}
-							variant={store.i18n === i1 ? "default" : "outline"}
-							onClick={() => store.setI18n(i1 as any)}
-							className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
-								store.i18n === i1
-									? "ring-2 ring-primary/20 shadow-md"
-									: "hover:bg-muted/50"
-							}`}
-						>
-							<FiMessageCircle className="w-5 h-5 shrink-0" />
-							<span className="font-medium text-sm">{i1}</span>
-						</Button>
-					))}
+					<Button
+						variant={i18n === "Paraglide" ? "default" : "outline"}
+						onClick={() => {
+							setI18n(i18n === "Paraglide" ? "" : "Paraglide");
+							copyInitCommand();
+						}}
+						className="justify-start gap-3 h-12 rounded-xl transition-all border"
+					>
+						<FiMessageCircle className="w-5 h-5 shrink-0" />
+						<span className="font-medium text-sm">Paraglide</span>
+					</Button>
 				</div>
 			</div>
 
 			<Separator className="ml-12 w-[calc(100%-3rem)]" />
 
-			{/* Dev Tooling */}
 			<div className="space-y-4">
 				<div className="flex gap-3">
 					<div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -237,7 +363,7 @@ export function AddonsConfig() {
 					<div className="space-y-1">
 						<Label className="text-base font-semibold">Dev Tooling</Label>
 						<div className="text-sm text-muted-foreground leading-snug">
-							Additional linting, formatting, mapping, and core workflow tools.
+							Extra tooling to wire into the generated setup.
 						</div>
 					</div>
 				</div>
@@ -248,12 +374,13 @@ export function AddonsConfig() {
 							<Button
 								key={tool}
 								size="sm"
-								variant={
-									store.devTooling.includes(tool) ? "default" : "outline"
-								}
-								onClick={() => store.toggleDevTooling(tool)}
+								variant={devTooling.includes(tool) ? "default" : "outline"}
+								onClick={() => {
+									toggleDevTooling(tool);
+									copyInitCommand();
+								}}
 								className={`justify-start gap-2 h-10 rounded-lg transition-all border text-xs ${
-									store.devTooling.includes(tool)
+									devTooling.includes(tool)
 										? "ring-1 ring-primary/20 shadow-sm bg-primary/10 text-primary hover:bg-primary/20"
 										: "bg-muted/30 hover:bg-muted/50"
 								}`}
@@ -268,44 +395,44 @@ export function AddonsConfig() {
 
 			<Separator className="ml-12 w-[calc(100%-3rem)]" />
 
-			{/* Typings / Validation */}
 			<div className="space-y-4">
 				<div className="flex gap-3">
 					<div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
 						<FiType className="h-5 w-5" />
 					</div>
 					<div className="space-y-1">
-						<Label className="text-base font-semibold">Validation & Typings</Label>
+						<Label className="text-base font-semibold">
+							Validation & Typings
+						</Label>
 						<div className="text-sm text-muted-foreground leading-snug">
-							Select a robust schema validation library for your data and APIs.
+							Choose the schema library to add.
 						</div>
 					</div>
 				</div>
 				<div className="grid grid-cols-2 gap-3 ml-12 w-[calc(100%-3rem)]">
-					{["Zod", "ArkType"].map((typ) => {
-						const Icon = typ === "Zod" ? FiCheckSquare : FiType;
-						return (
-							<Button
-								key={typ}
-								variant={store.typings === typ ? "default" : "outline"}
-								onClick={() => store.setTypings(typ as any)}
-								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
-									store.typings === typ
-										? "ring-2 ring-primary/20 shadow-md"
-										: "hover:bg-muted/50"
-								}`}
-							>
-								<Icon className="w-5 h-5 shrink-0" />
-								<span className="font-medium text-sm">{typ}</span>
-							</Button>
-						);
-					})}
+					{["Zod", "ArkType"].map((typ) => (
+						<Button
+							key={typ}
+							variant={typings === typ ? "default" : "outline"}
+							onClick={() => {
+								setTypings(
+									typings === typ
+										? ""
+										: (typ as Exclude<StackState["typings"], "">),
+								);
+								copyInitCommand();
+							}}
+							className="justify-start gap-3 h-12 rounded-xl transition-all border"
+						>
+							<FiType className="w-5 h-5 shrink-0" />
+							<span className="font-medium text-sm">{typ}</span>
+						</Button>
+					))}
 				</div>
 			</div>
 
 			<Separator className="ml-12 w-[calc(100%-3rem)]" />
 
-			{/* Animations */}
 			<div className="space-y-4">
 				<div className="flex gap-3">
 					<div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -314,26 +441,33 @@ export function AddonsConfig() {
 					<div className="space-y-1">
 						<Label className="text-base font-semibold">Animations</Label>
 						<div className="text-sm text-muted-foreground leading-snug">
-							Add a powerful motion library for fluid UI transitions.
+							Add a motion library to the install plan.
 						</div>
 					</div>
 				</div>
 				<div className="grid grid-cols-2 gap-3 ml-12 w-[calc(100%-3rem)]">
 					{["Framer Motion", "Motion", "AutoAnimate", "GSAP"].map((anim) => {
-						const Icon = 
-							anim === "Framer Motion" ? FiFramer :
-							anim === "GSAP" ? SiGreensock :
-							anim === "AutoAnimate" ? FiZap : FiWind;
+						const Icon =
+							anim === "Framer Motion"
+								? FiFramer
+								: anim === "GSAP"
+									? SiGreensock
+									: anim === "AutoAnimate"
+										? FiZap
+										: FiWind;
 						return (
 							<Button
 								key={anim}
-								variant={store.animations === anim ? "default" : "outline"}
-								onClick={() => store.setAnimations(anim as any)}
-								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
-									store.animations === anim
-										? "ring-2 ring-primary/20 shadow-md"
-										: "hover:bg-muted/50"
-								}`}
+								variant={animations === anim ? "default" : "outline"}
+								onClick={() => {
+									setAnimations(
+										animations === anim
+											? ""
+											: (anim as Exclude<StackState["animations"], "">),
+									);
+									copyInitCommand();
+								}}
+								className="justify-start gap-3 h-12 rounded-xl transition-all border"
 							>
 								<Icon className="w-5 h-5 shrink-0" />
 								<span className="font-medium text-sm">{anim}</span>

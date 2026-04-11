@@ -1,25 +1,25 @@
-import { useStackStore } from "@/store/create-stack";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 import {
-	SiPrisma,
-	SiDrizzle,
-	SiClerk,
-	SiApollographql,
-	SiTrpc,
-} from "react-icons/si";
-import {
+	FiCloud,
+	FiCode,
 	FiDatabase,
 	FiLayers,
 	FiLock,
-	FiCloud,
-	FiZap,
-	FiShield,
 	FiRepeat,
-	FiCode,
+	FiShield,
 	FiUserCheck,
+	FiZap,
 } from "react-icons/fi";
+import {
+	SiApollographql,
+	SiClerk,
+	SiDrizzle,
+	SiPrisma,
+	SiTrpc,
+} from "react-icons/si";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { type StackState, useStackStore } from "@/store/create-stack";
 
 const DB_ICONS: Record<string, React.ElementType> = {
 	Neon: FiDatabase, // SiNeon doesn't always exist, fallback to FiDatabase
@@ -45,7 +45,14 @@ const API_ICONS: Record<string, React.ElementType> = {
 };
 
 export function BackendConfig() {
-	const store = useStackStore();
+	const database = useStackStore((state) => state.database);
+	const setDatabase = useStackStore((state) => state.setDatabase);
+	const selectedOrm = useStackStore((state) => state.orm);
+	const setOrm = useStackStore((state) => state.setOrm);
+	const selectedAuth = useStackStore((state) => state.auth);
+	const setAuth = useStackStore((state) => state.setAuth);
+	const apiLayer = useStackStore((state) => state.apiLayer);
+	const setApiLayer = useStackStore((state) => state.setApiLayer);
 	return (
 		<div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300 pb-8">
 			{/* Database */}
@@ -67,10 +74,16 @@ export function BackendConfig() {
 						return (
 							<Button
 								key={db}
-								variant={store.database === db ? "default" : "outline"}
-								onClick={() => store.setDatabase(db as any)}
+								variant={database === db ? "default" : "outline"}
+								onClick={() =>
+									setDatabase(
+										database === db
+											? ""
+											: (db as Exclude<StackState["database"], "">),
+									)
+								}
 								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
-									store.database === db
+									database === db
 										? "ring-2 ring-primary/20 shadow-md"
 										: "hover:bg-muted/50"
 								}`}
@@ -104,10 +117,16 @@ export function BackendConfig() {
 						return (
 							<Button
 								key={orm}
-								variant={store.orm === orm ? "default" : "outline"}
-								onClick={() => store.setOrm(orm as any)}
+								variant={selectedOrm === orm ? "default" : "outline"}
+								onClick={() =>
+									setOrm(
+										selectedOrm === orm
+											? ""
+											: (orm as Exclude<StackState["orm"], "">),
+									)
+								}
 								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
-									store.orm === orm
+									selectedOrm === orm
 										? "ring-2 ring-primary/20 shadow-md"
 										: "hover:bg-muted/50"
 								}`}
@@ -141,10 +160,16 @@ export function BackendConfig() {
 						return (
 							<Button
 								key={auth}
-								variant={store.auth === auth ? "default" : "outline"}
-								onClick={() => store.setAuth(auth as any)}
+								variant={selectedAuth === auth ? "default" : "outline"}
+								onClick={() =>
+									setAuth(
+										selectedAuth === auth
+											? ""
+											: (auth as Exclude<StackState["auth"], "">),
+									)
+								}
 								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
-									store.auth === auth
+									selectedAuth === auth
 										? "ring-2 ring-primary/20 shadow-md"
 										: "hover:bg-muted/50"
 								}`}
@@ -178,10 +203,16 @@ export function BackendConfig() {
 						return (
 							<Button
 								key={api}
-								variant={store.apiLayer === api ? "default" : "outline"}
-								onClick={() => store.setApiLayer(api as any)}
+								variant={apiLayer === api ? "default" : "outline"}
+								onClick={() =>
+									setApiLayer(
+										apiLayer === api
+											? ""
+											: (api as Exclude<StackState["apiLayer"], "">),
+									)
+								}
 								className={`justify-start gap-3 h-12 rounded-xl transition-all border ${
-									store.apiLayer === api
+									apiLayer === api
 										? "ring-2 ring-primary/20 shadow-md"
 										: "hover:bg-muted/50"
 								}`}

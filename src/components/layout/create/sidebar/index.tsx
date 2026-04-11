@@ -1,17 +1,18 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FiSettings, FiMonitor, FiServer, FiBox, FiChevronRight, FiCheck } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
+import { useStackStore } from "@/store/create-stack";
+import type { SidebarTab } from "@/lib/stacker";
 
 import { GeneralConfig } from "./general";
 import { FrontendConfig } from "./frontend";
 import { BackendConfig } from "./backend";
 import { AddonsConfig } from "./addons";
 
-const CATEGORIES = ["General", "Frontend", "Backend", "Addons"] as const;
-type Category = (typeof CATEGORIES)[number];
+const CATEGORIES: SidebarTab[] = ["General", "Frontend", "Backend", "Addons"];
 
-const CATEGORY_ICONS: Record<Category, React.ElementType> = {
+const CATEGORY_ICONS: Record<SidebarTab, React.ElementType> = {
 	General: FiSettings,
 	Frontend: FiMonitor,
 	Backend: FiServer,
@@ -19,7 +20,8 @@ const CATEGORY_ICONS: Record<Category, React.ElementType> = {
 };
 
 export function Sidebar() {
-	const [activeTab, setActiveTab] = useState<Category>("General");
+	const activeTab = useStackStore((state) => state.sidebarTab);
+	const setActiveTab = useStackStore((state) => state.setSidebarTab);
 	const scrollRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -85,7 +87,7 @@ export function Sidebar() {
 								Next: {CATEGORIES[activeIndex + 1]} <FiChevronRight className="w-4 h-4" />
 							</Button>
 						) : (
-							<Button className="gap-2 rounded-xl bg-green-600 hover:bg-green-700 text-white shadow-sm px-6 h-11">
+							<Button className="gap-2 rounded-xl shadow-sm px-6 h-11">
 								Generate Template <FiCheck className="w-4 h-4" />
 							</Button>
 						)}

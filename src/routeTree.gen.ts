@@ -10,33 +10,89 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as CreateIndexRouteImport } from './routes/create/index'
+import { Route as ApiPreviewRouteImport } from './routes/api/preview'
+import { Route as ApiNpmSearchRouteImport } from './routes/api/npm-search'
+import { Route as ApiTemplatesIndexRouteImport } from './routes/api/templates.index'
+import { Route as ApiTemplatesIdRouteImport } from './routes/api/templates.$id'
 
 const CreateIndexRoute = CreateIndexRouteImport.update({
   id: '/create/',
   path: '/create/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPreviewRoute = ApiPreviewRouteImport.update({
+  id: '/api/preview',
+  path: '/api/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiNpmSearchRoute = ApiNpmSearchRouteImport.update({
+  id: '/api/npm-search',
+  path: '/api/npm-search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTemplatesIndexRoute = ApiTemplatesIndexRouteImport.update({
+  id: '/api/templates/',
+  path: '/api/templates/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTemplatesIdRoute = ApiTemplatesIdRouteImport.update({
+  id: '/api/templates/$id',
+  path: '/api/templates/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
+  '/api/npm-search': typeof ApiNpmSearchRoute
+  '/api/preview': typeof ApiPreviewRoute
   '/create/': typeof CreateIndexRoute
+  '/api/templates/$id': typeof ApiTemplatesIdRoute
+  '/api/templates/': typeof ApiTemplatesIndexRoute
 }
 export interface FileRoutesByTo {
+  '/api/npm-search': typeof ApiNpmSearchRoute
+  '/api/preview': typeof ApiPreviewRoute
   '/create': typeof CreateIndexRoute
+  '/api/templates/$id': typeof ApiTemplatesIdRoute
+  '/api/templates': typeof ApiTemplatesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/api/npm-search': typeof ApiNpmSearchRoute
+  '/api/preview': typeof ApiPreviewRoute
   '/create/': typeof CreateIndexRoute
+  '/api/templates/$id': typeof ApiTemplatesIdRoute
+  '/api/templates/': typeof ApiTemplatesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/create/'
+  fullPaths:
+    | '/api/npm-search'
+    | '/api/preview'
+    | '/create/'
+    | '/api/templates/$id'
+    | '/api/templates/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/create'
-  id: '__root__' | '/create/'
+  to:
+    | '/api/npm-search'
+    | '/api/preview'
+    | '/create'
+    | '/api/templates/$id'
+    | '/api/templates'
+  id:
+    | '__root__'
+    | '/api/npm-search'
+    | '/api/preview'
+    | '/create/'
+    | '/api/templates/$id'
+    | '/api/templates/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  ApiNpmSearchRoute: typeof ApiNpmSearchRoute
+  ApiPreviewRoute: typeof ApiPreviewRoute
   CreateIndexRoute: typeof CreateIndexRoute
+  ApiTemplatesIdRoute: typeof ApiTemplatesIdRoute
+  ApiTemplatesIndexRoute: typeof ApiTemplatesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +104,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreateIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/preview': {
+      id: '/api/preview'
+      path: '/api/preview'
+      fullPath: '/api/preview'
+      preLoaderRoute: typeof ApiPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/npm-search': {
+      id: '/api/npm-search'
+      path: '/api/npm-search'
+      fullPath: '/api/npm-search'
+      preLoaderRoute: typeof ApiNpmSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/templates/': {
+      id: '/api/templates/'
+      path: '/api/templates'
+      fullPath: '/api/templates/'
+      preLoaderRoute: typeof ApiTemplatesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/templates/$id': {
+      id: '/api/templates/$id'
+      path: '/api/templates/$id'
+      fullPath: '/api/templates/$id'
+      preLoaderRoute: typeof ApiTemplatesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  ApiNpmSearchRoute: ApiNpmSearchRoute,
+  ApiPreviewRoute: ApiPreviewRoute,
   CreateIndexRoute: CreateIndexRoute,
+  ApiTemplatesIdRoute: ApiTemplatesIdRoute,
+  ApiTemplatesIndexRoute: ApiTemplatesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
