@@ -1,35 +1,46 @@
-import * as fs from "fs";
-import * as path from "path";
+import { put, list } from "@vercel/blob";
+import { createHash } from "node:crypto";
 
-const WORKSPACE_ROOT = path.resolve(process.cwd(), "..");
-const DB_DIR = path.join(WORKSPACE_ROOT, ".stacker");
-const DB_PATH = path.join(DB_DIR, "templates.json");
+const PREFIX = "templates";
 
-function ensureDb() {
-	fs.mkdirSync(DB_DIR, { recursive: true });
+export function generateTemplateId(manifest: unknown): string {
+	const hash = createHash("sha256")
+		.update(JSON.stringify(manifest))
+		.digest("base64url");
+	return hash.slice(0, 6);
+}
 
+/**
+ * Persist a manifest to Vercel Blob.
+ * Uses addRandomSuffix: false so the path is deterministic by ID.
+ */
+export async function saveTemplate(
+	id: string,
+	manifest: unknown,
+): Promise<void> {
+	await put(`${PREFIX}/${id}.json`, JSON.stringify(manifest), {
+		access: "public",
+		contentType: "application/json",
+		addRandomSuffix: false,
+	});
+}
+
+/**
+ * Retrieve a manifest by its short ID.
+ * Uses list() to resolve the full blob URL, then fetches the JSON.
+ */
+export async function fetchTemplate(id: string): Promise<unknown | null> {
 	try {
-		fs.accessSync(DB_PATH);
+		const { blobs } = await list({
+			prefix: `${PREFIX}/${id}.json`,
+			limit: 1,
+		});
+		const blob = blobs[0];
+		if (!blob) return null;
+		const res = await fetch(blob.url);
+		if (!res.ok) return null;
+		return await res.json();
 	} catch {
-		fs.writeFileSync(DB_PATH, JSON.stringify({}));
+		return null;
 	}
-}
-
-export function readTemplateDb() {
-	ensureDb();
-
-	try {
-		return JSON.parse(fs.readFileSync(DB_PATH, "utf-8")) as Record<string, unknown>;
-	} catch {
-		return {};
-	}
-}
-
-export function writeTemplateDb(db: Record<string, unknown>) {
-	ensureDb();
-	fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
-}
-
-export function getTemplateDbPath() {
-	return DB_PATH;
 }

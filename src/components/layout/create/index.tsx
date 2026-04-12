@@ -100,38 +100,77 @@ export function CreatePage() {
 	const previewMode = useStackStore((state) => state.previewMode);
 	const font = useStackStore((state) => state.font);
 
-	const pageThemeStyle = useMemo(() => {
+	const themedPalette = useMemo<PreviewCssPalette>(() => {
 		const palette =
 			getTweakcnPreviewPalette(tweakcnTheme) ??
 			getFallbackPreviewPalette(baseColor);
 		const shouldDarken =
 			previewMode === "dark" && !isDarkColor(palette.background);
-		const themed = shouldDarken ? darkenPalette(palette) : palette;
+		return shouldDarken ? darkenPalette(palette) : palette;
+	}, [baseColor, tweakcnTheme, previewMode]);
+
+	const pageThemeStyle = useMemo(() => {
+		const p = themedPalette;
 		return {
 			fontFamily: fontStack(font),
-			"--background": themed.background,
-			"--foreground": themed.foreground,
-			"--card": themed.card,
-			"--card-foreground": themed.cardForeground,
-			"--popover": themed.popover,
-			"--popover-foreground": themed.popoverForeground,
-			"--primary": themed.primary,
-			"--primary-foreground": themed.primaryForeground,
-			"--secondary": themed.secondary,
-			"--secondary-foreground": themed.secondaryForeground,
-			"--muted": themed.muted,
-			"--muted-foreground": themed.mutedForeground,
-			"--accent": themed.accent,
-			"--accent-foreground": themed.accentForeground,
-			"--destructive": themed.destructive,
-			"--destructive-foreground": themed.destructiveForeground,
-			"--border": themed.border,
-			"--input": themed.input,
-			"--ring": themed.ring,
-			...buildExtendedThemeVars(themed),
+			"--background": p.background,
+			"--foreground": p.foreground,
+			"--card": p.card,
+			"--card-foreground": p.cardForeground,
+			"--popover": p.popover,
+			"--popover-foreground": p.popoverForeground,
+			"--primary": p.primary,
+			"--primary-foreground": p.primaryForeground,
+			"--secondary": p.secondary,
+			"--secondary-foreground": p.secondaryForeground,
+			"--muted": p.muted,
+			"--muted-foreground": p.mutedForeground,
+			"--accent": p.accent,
+			"--accent-foreground": p.accentForeground,
+			"--destructive": p.destructive,
+			"--destructive-foreground": p.destructiveForeground,
+			"--border": p.border,
+			"--input": p.input,
+			"--ring": p.ring,
+			...buildExtendedThemeVars(p),
 			colorScheme: previewMode,
 		} as CSSProperties;
-	}, [baseColor, tweakcnTheme, previewMode, font]);
+	}, [themedPalette, font, previewMode]);
+
+	// Apply theme to the whole document so header, sidebar, everything changes
+	useEffect(() => {
+		const root = document.documentElement;
+		const p = themedPalette;
+		const ext = buildExtendedThemeVars(p);
+		const vars: Record<string, string> = {
+			"--background": p.background,
+			"--foreground": p.foreground,
+			"--card": p.card,
+			"--card-foreground": p.cardForeground,
+			"--popover": p.popover,
+			"--popover-foreground": p.popoverForeground,
+			"--primary": p.primary,
+			"--primary-foreground": p.primaryForeground,
+			"--secondary": p.secondary,
+			"--secondary-foreground": p.secondaryForeground,
+			"--muted": p.muted,
+			"--muted-foreground": p.mutedForeground,
+			"--accent": p.accent,
+			"--accent-foreground": p.accentForeground,
+			"--destructive": p.destructive,
+			"--destructive-foreground": p.destructiveForeground,
+			"--border": p.border,
+			"--input": p.input,
+			"--ring": p.ring,
+			...(ext as Record<string, string>),
+		};
+		for (const [k, v] of Object.entries(vars)) {
+			if (v) root.style.setProperty(k, v);
+		}
+		root.style.fontFamily = fontStack(font);
+		root.classList.remove("dark", "light");
+		root.classList.add(previewMode === "dark" ? "dark" : "light");
+	}, [themedPalette, previewMode, font]);
 
 	useEffect(() => {
 		if (lastSyncedManifest.current === manifestJson) {

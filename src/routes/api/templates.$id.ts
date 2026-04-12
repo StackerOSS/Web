@@ -1,19 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { json } from "@tanstack/react-start";
-import { readTemplateDb } from "@/server/template-db";
+import { fetchTemplate } from "@/server/template-db";
 
 export const Route = createFileRoute("/api/templates/$id")({
 	server: {
 		handlers: {
 			GET: async ({ params }: { params: { id: string } }) => {
-				const db = readTemplateDb();
-				const config = db[params.id];
+				const config = await fetchTemplate(params.id);
 
 				if (config) {
 					return json(config);
 				}
 
-				return new Response(JSON.stringify({ error: "Not found" }), {
+				return new Response(JSON.stringify({ error: "Template not found" }), {
 					status: 404,
 					headers: { "content-type": "application/json" },
 				});
