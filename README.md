@@ -194,7 +194,7 @@ bun run check      # Biome lint + format check
 
 | Package | Description |
 |---|---|
-| [`stacker-cli`](../CLI) | The CLI that reads template IDs and scaffolds projects |
+| [`stacker-cli`](https://github.com/StackerOSS/CLI) | The CLI that reads template IDs and scaffolds projects |
 
 ---
 
