@@ -1,4 +1,4 @@
-import { put, list, head, download } from "@vercel/blob";
+import { put, list, head } from "@vercel/blob";
 import { createHash } from "node:crypto";
 
 const PREFIX = "templates";
@@ -38,7 +38,7 @@ export async function saveTemplate(
  */
 export async function fetchTemplate(id: string): Promise<unknown | null> {
   try {
-    // Step 1 — resolve the full pathname from the short ID
+    // Step 1 — confirm the blob exists and get its canonical URL
     const { blobs } = await list({
       prefix: `${PREFIX}/${id}.json`,
       limit: 1,
@@ -47,69 +47,25 @@ export async function fetchTemplate(id: string): Promise<unknown | null> {
     const blob = blobs[0];
     if (!blob) return null;
 
-    // Step 2 — download() returns a Response-like object with a signed URL
-    // that is valid server-side. This is the correct API for private blobs.
-    const { body } = await download(blob.url, {
-      token: process.env.BLOB_READ_WRITE_TOKEN, // explicit token avoids env lookup surprises
+    // Step 2 — head() returns a short-lived signed downloadUrl for private blobs
+    const { downloadUrl } = await head(blob.url, {
+      token: process.env.BLOB_READ_WRITE_TOKEN,
     });
 
-    if (!body) return null;
-
-    // Step 3 — stream to text, then parse
-    const reader = body.getReader();
-    const chunks: Uint8Array[] = [];
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      if (value) chunks.push(value);
+    // Step 3 — fetch the signed URL (no auth header needed — signature is in the URL)
+    const res = await fetch(downloadUrl);
+    if (!res.ok) {
+      console.error(`[fetchTemplate] Signed fetch failed: ${res.status} ${res.statusText}`);
+      return null;
     }
 
-    const text = new TextDecoder().decode(
-      chunks.reduce((acc, chunk) => {
-        const merged = new Uint8Array(acc.length + chunk.length);
-        merged.set(acc, 0);
-        merged.set(chunk, acc.length);
-        return merged;
-      }, new Uint8Array(0)),
-    );
-
-    return JSON.parse(text);
+    return await res.json();
   } catch (err) {
     console.error("[fetchTemplate] Failed to fetch blob:", err);
     return null;
   }
 }
 
-/**
- * Alternative: use head() to get a short-lived signed URL,
- * then fetch it. Cleaner if you just want a URL to pass around.
- *
- * Note: downloadUrl expires after ~1 hour by default.
- */
-export async function fetchTemplateViaSignedUrl(
-  id: string,
-): Promise<unknown | null> {
-  try {
-    const { blobs } = await list({
-      prefix: `${PREFIX}/${id}.json`,
-      limit: 1,
-    });
-
-    const blob = blobs[0];
-    if (!blob) return null;
-
-    // head() returns blob metadata + a short-lived signed downloadUrl
-    const { downloadUrl } = await head(blob.url, {
-      token: process.env.BLOB_READ_WRITE_TOKEN,
-    });
-
-    const res = await fetch(downloadUrl);
-    if (!res.ok) return null;
-
-    return await res.json();
-  } catch (err) {
-    console.error("[fetchTemplateViaSignedUrl] Failed:", err);
-    return null;
-  }
-}
+// fetchTemplateViaSignedUrl is now the same as fetchTemplate above.
+// Kept as a named alias for call-site clarity if needed.
+export const fetchTemplateViaSignedUrl = fetchTemplate;
