@@ -1,5 +1,4 @@
-import { type CSSProperties, useEffect, useMemo, useRef } from "react";
-import { useStackerManifest } from "@/hooks/use-stacker-manifest";
+import { type CSSProperties, useEffect, useMemo } from "react";
 import {
 	PREVIEW_FONT_STACK,
 	type PreviewFontOption,
@@ -91,10 +90,6 @@ function buildExtendedThemeVars(p: PreviewCssPalette): CSSProperties {
 }
 
 export function CreatePage() {
-	const manifest = useStackerManifest();
-	const manifestJson = useMemo(() => JSON.stringify(manifest), [manifest]);
-	const lastSyncedManifest = useRef("");
-	const setTemplateId = useStackStore((state) => state.setTemplateId);
 	const baseColor = useStackStore((state) => state.baseColor);
 	const tweakcnTheme = useStackStore((state) => state.tweakcnTheme);
 	const previewMode = useStackStore((state) => state.previewMode);
@@ -171,29 +166,6 @@ export function CreatePage() {
 		root.classList.remove("dark", "light");
 		root.classList.add(previewMode === "dark" ? "dark" : "light");
 	}, [themedPalette, previewMode, font]);
-
-	useEffect(() => {
-		if (lastSyncedManifest.current === manifestJson) {
-			return;
-		}
-
-		const timeout = setTimeout(async () => {
-			try {
-				const res = await fetch("/api/templates/", {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: manifestJson,
-				});
-				const data = await res.json();
-				lastSyncedManifest.current = manifestJson;
-				if (data.id) {
-					setTemplateId(data.id);
-				}
-			} catch {}
-		}, 500);
-
-		return () => clearTimeout(timeout);
-	}, [manifestJson, setTemplateId]);
 
 	return (
 		<div

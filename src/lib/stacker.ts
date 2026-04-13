@@ -430,8 +430,8 @@ export function getManifestJson(manifest: StackerManifest) {
 
 export function getInitCommand(templateId?: string) {
 	return templateId
-		? `bunx @stacker/cli ${templateId}`
-		: "bunx @stacker/cli <id>";
+		? `bunx @stacker-oss/cli ${templateId}`
+		: "bunx @stacker-oss/cli <id>";
 }
 
 export function summarizeManifest(manifest: StackerManifest) {

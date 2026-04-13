@@ -19,7 +19,7 @@ export async function saveTemplate(
 	manifest: unknown,
 ): Promise<void> {
 	await put(`${PREFIX}/${id}.json`, JSON.stringify(manifest), {
-		access: "public",
+		access: "private",
 		contentType: "application/json",
 		addRandomSuffix: false,
 	});

@@ -74,7 +74,7 @@ function makeReadme(manifest: StackerManifest): string {
 
 	return `# ${manifest.project.name}
 
-> Generated with [Stacker](https://stacker.dev) — Build your stack. Instantly.
+> Generated with [Stacker](https://stacker.ranveersoni.me) — Build your stack. Instantly.
 
 ## Tech Stack
 
