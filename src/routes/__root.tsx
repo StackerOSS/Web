@@ -7,6 +7,8 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import appCss from "../styles.css?url";
 import type { QueryClient } from "@tanstack/react-query";
+import ErrorComponent from "../components/layout/ErrorComponent";
+import NotFound from "../components/layout/NotFound";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -61,20 +63,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 		],
 	}),
 	shellComponent: RootDocument,
-	notFoundComponent: () => (
-		<div className="grid h-screen place-items-center bg-background text-foreground">
-			<div className="space-y-3 text-center">
-				<p className="text-5xl font-bold tracking-tight">404</p>
-				<p className="text-muted-foreground">This page doesn't exist.</p>
-				<a
-					href="/"
-					className="inline-block rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-				>
-					Go home
-				</a>
-			</div>
-		</div>
-	),
+	errorComponent: ErrorComponent,
+	notFoundComponent: NotFound,
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -86,7 +76,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body
 				suppressHydrationWarning
-				className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-primary/20 selection:text-primary-foreground"
+				className="font-sans antialiased wrap-anywhere selection:bg-primary/20 selection:text-primary-foreground"
 			>
 				{children}
 				{import.meta.env.DEV && (

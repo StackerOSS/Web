@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as CreateIndexRouteImport } from './routes/create/index'
 import { Route as ApiPreviewRouteImport } from './routes/api/preview'
 import { Route as ApiNpmSearchRouteImport } from './routes/api/npm-search'
 import { Route as ApiTemplatesIndexRouteImport } from './routes/api/templates.index'
 import { Route as ApiTemplatesIdRouteImport } from './routes/api/templates.$id'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CreateIndexRoute = CreateIndexRouteImport.update({
   id: '/create/',
   path: '/create/',
@@ -42,6 +48,7 @@ const ApiTemplatesIdRoute = ApiTemplatesIdRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/api/npm-search': typeof ApiNpmSearchRoute
   '/api/preview': typeof ApiPreviewRoute
   '/create/': typeof CreateIndexRoute
@@ -49,6 +56,7 @@ export interface FileRoutesByFullPath {
   '/api/templates/': typeof ApiTemplatesIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/api/npm-search': typeof ApiNpmSearchRoute
   '/api/preview': typeof ApiPreviewRoute
   '/create': typeof CreateIndexRoute
@@ -57,6 +65,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/api/npm-search': typeof ApiNpmSearchRoute
   '/api/preview': typeof ApiPreviewRoute
   '/create/': typeof CreateIndexRoute
@@ -66,6 +75,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/api/npm-search'
     | '/api/preview'
     | '/create/'
@@ -73,6 +83,7 @@ export interface FileRouteTypes {
     | '/api/templates/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/api/npm-search'
     | '/api/preview'
     | '/create'
@@ -80,6 +91,7 @@ export interface FileRouteTypes {
     | '/api/templates'
   id:
     | '__root__'
+    | '/'
     | '/api/npm-search'
     | '/api/preview'
     | '/create/'
@@ -88,6 +100,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   ApiNpmSearchRoute: typeof ApiNpmSearchRoute
   ApiPreviewRoute: typeof ApiPreviewRoute
   CreateIndexRoute: typeof CreateIndexRoute
@@ -97,6 +110,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/create/': {
       id: '/create/'
       path: '/create'
@@ -136,6 +156,7 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   ApiNpmSearchRoute: ApiNpmSearchRoute,
   ApiPreviewRoute: ApiPreviewRoute,
   CreateIndexRoute: CreateIndexRoute,
