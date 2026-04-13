@@ -2,18 +2,11 @@
 
 <br />
 
-```
- ███████╗████████╗ █████╗  ██████╗██╗  ██╗███████╗██████╗
- ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝██╔════╝██╔══██╗
- ███████╗   ██║   ███████║██║     █████╔╝ █████╗  ██████╔╝
- ╚════██║   ██║   ██╔══██║██║     ██╔═██╗ ██╔══╝  ██╔══██╗
- ███████║   ██║   ██║  ██║╚██████╗██║  ██╗███████╗██║  ██║
- ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
-```
+<img src="https://stacker.ranveersoni.me/logo.png" alt="Stacker Logo" width="200" />
 
 **Build your stack. Instantly.**
 
-A visual full-stack builder — configure your entire project (framework, UI, auth, ORM, API, theme)
+A visual full-stack builder configure your entire project (framework, UI, auth, ORM, API, theme)
 and scaffold it locally with a single CLI command.
 
 [![TanStack Start](https://img.shields.io/badge/built%20with-TanStack%20Start-f97316.svg)](#)
