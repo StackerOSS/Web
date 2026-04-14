@@ -1,10 +1,14 @@
 import {
 	FiChevronDown,
 	FiCircle,
+	FiCode,
 	FiDroplet,
+	FiFolder,
 	FiLayers,
 	FiLayout,
 	FiPackage,
+	FiServer,
+	FiSettings,
 	FiSidebar,
 	FiStar,
 	FiType,
@@ -12,6 +16,7 @@ import {
 } from "react-icons/fi";
 import {
 	SiAstro,
+	SiCloudflare,
 	SiLaravel,
 	SiNextdotjs,
 	SiReact,
@@ -19,6 +24,7 @@ import {
 	SiSolid,
 	SiVite,
 } from "react-icons/si";
+import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,17 +32,23 @@ import {
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { PREVIEW_FONT_OPTIONS } from "@/lib/preview-fonts";
 import {
 	FRAMEWORKS,
+	NEXTJS_BUNDLER_OPTIONS,
+	NEXTJS_LINTER_OPTIONS,
 	OFFICIAL_TWEAKCN_THEMES,
 	SHADCN_BASE_COLOR_NAMES,
 	SHADCN_BORDER_RADIUS_OPTIONS,
 	SHADCN_COMPONENTS,
 	SHADCN_STYLE_OPTIONS,
 	TANSTACK_ADDONS,
+	TANSTACK_DEPLOYMENT_OPTIONS,
+	TANSTACK_TOOLCHAIN_OPTIONS,
 } from "@/lib/stacker";
 import { useStackStore } from "@/store/create-stack";
 
@@ -169,6 +181,331 @@ export function FrontendConfig() {
 					})}
 				</div>
 			</div>
+
+			<AnimatePresence>
+				{framework === "Next.js" && (
+					<motion.div
+						initial={{ opacity: 0, height: 0 }}
+						animate={{ opacity: 1, height: "auto" }}
+						exit={{ opacity: 0, height: 0 }}
+						transition={{ duration: 0.2 }}
+					>
+						<Separator className="ml-12 w-[calc(100%-3rem)]" />
+						<div className="space-y-4 pt-4">
+							<div className="flex gap-3">
+								<div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+									<SiNextdotjs className="h-5 w-5" />
+								</div>
+								<div className="space-y-1">
+									<Label className="text-base font-semibold">Next.js Options</Label>
+									<div className="text-sm text-muted-foreground leading-snug">
+										Customize your Next.js scaffold.
+									</div>
+								</div>
+							</div>
+							<div className="ml-12 w-[calc(100%-3rem)]">
+								<Collapsible
+									open={useStackStore((s) => s.nextjsAdvancedOpen)}
+									onOpenChange={useStackStore((s) => s.setNextjsAdvancedOpen)}
+									className="rounded-2xl border bg-muted/20"
+								>
+									<CollapsibleTrigger className="flex w-full items-center justify-between p-4 text-left">
+										<div>
+											<div className="font-medium">Advanced options</div>
+											<div className="text-sm text-muted-foreground">
+												src/, import alias, linter, bundler, and more.
+											</div>
+										</div>
+										<FiChevronDown
+											className={`h-4 w-4 transition-transform ${
+												useStackStore((s) => s.nextjsAdvancedOpen)
+													? "rotate-180"
+													: ""
+											}`}
+										/>
+									</CollapsibleTrigger>
+									<CollapsibleContent className="border-t p-4 pt-5">
+										<div className="space-y-5">
+											<div className="flex items-center justify-between">
+												<div className="space-y-0.5">
+													<Label className="text-sm font-medium">
+														Use src/ directory
+													</Label>
+													<p className="text-xs text-muted-foreground">
+														Place app files under src/app/
+													</p>
+												</div>
+												<Switch
+													checked={useStackStore((s) => s.nextjs.srcDir)}
+													onCheckedChange={useStackStore(
+														(s) => s.setNextjsSrcDir,
+													)}
+												/>
+											</div>
+
+											<div className="space-y-2">
+												<Label className="text-sm font-medium">
+													Import alias
+												</Label>
+												<Input
+													value={useStackStore((s) => s.nextjs.importAlias)}
+													onChange={(e) =>
+														useStackStore((s) => s.setNextjsImportAlias)(
+															e.target.value,
+														)
+													}
+													placeholder="@/*"
+													className="rounded-lg"
+												/>
+											</div>
+
+											<div className="space-y-3">
+												<Label className="text-sm font-medium">Linter</Label>
+												<div className="grid grid-cols-3 gap-2">
+													{NEXTJS_LINTER_OPTIONS.map((opt) => (
+														<Button
+															key={opt.value}
+															size="sm"
+															variant={
+																useStackStore((s) => s.nextjs.linter) ===
+																opt.value
+																	? "default"
+																	: "outline"
+															}
+															onClick={() =>
+																useStackStore((s) => s.setNextjsLinter)(
+																	opt.value,
+																)
+															}
+															className="rounded-lg justify-start"
+														>
+															<FiCode className="w-3.5 h-3.5 mr-2" />
+															{opt.label}
+														</Button>
+													))}
+												</div>
+											</div>
+
+											<div className="space-y-3">
+												<Label className="text-sm font-medium">Bundler</Label>
+												<div className="grid grid-cols-2 gap-2">
+													{NEXTJS_BUNDLER_OPTIONS.map((opt) => (
+														<Button
+															key={opt.value}
+															size="sm"
+															variant={
+																useStackStore((s) => s.nextjs.bundler) ===
+																opt.value
+																	? "default"
+																	: "outline"
+															}
+															onClick={() =>
+																useStackStore((s) => s.setNextjsBundler)(
+																	opt.value,
+																)
+															}
+															className="rounded-lg justify-start"
+														>
+															<FiServer className="w-3.5 h-3.5 mr-2" />
+															{opt.label}
+														</Button>
+													))}
+												</div>
+											</div>
+
+											<div className="flex items-center justify-between">
+												<div className="space-y-0.5">
+													<Label className="text-sm font-medium">
+														React Compiler
+													</Label>
+													<p className="text-xs text-muted-foreground">
+														Enable Babel compiler for automatic memoization
+													</p>
+												</div>
+												<Switch
+													checked={useStackStore(
+														(s) => s.nextjs.reactCompiler,
+													)}
+													onCheckedChange={useStackStore(
+														(s) => s.setNextjsReactCompiler,
+													)}
+												/>
+											</div>
+
+											<div className="flex items-center justify-between">
+												<div className="space-y-0.5">
+													<Label className="text-sm font-medium">
+														AGENTS.md
+													</Label>
+													<p className="text-xs text-muted-foreground">
+														Include AI agent guidance docs
+													</p>
+												</div>
+												<Switch
+													checked={useStackStore((s) => s.nextjs.agentsMd)}
+													onCheckedChange={useStackStore(
+														(s) => s.setNextjsAgentsMd,
+													)}
+												/>
+											</div>
+										</div>
+									</CollapsibleContent>
+								</Collapsible>
+							</div>
+						</div>
+					</motion.div>
+				)}
+
+				{framework === "TanStack Start" && (
+					<motion.div
+						initial={{ opacity: 0, height: 0 }}
+						animate={{ opacity: 1, height: "auto" }}
+						exit={{ opacity: 0, height: 0 }}
+						transition={{ duration: 0.2 }}
+					>
+						<Separator className="ml-12 w-[calc(100%-3rem)]" />
+						<div className="space-y-4 pt-4">
+							<div className="flex gap-3">
+								<div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+									<FiZap className="h-5 w-5" />
+								</div>
+								<div className="space-y-1">
+									<Label className="text-base font-semibold">
+										TanStack CLI Options
+									</Label>
+									<div className="text-sm text-muted-foreground leading-snug">
+										Configure toolchain, deployment, and more.
+									</div>
+								</div>
+							</div>
+							<div className="ml-12 w-[calc(100%-3rem)]">
+								<Collapsible
+									open={useStackStore((s) => s.tanstackAdvancedOpen)}
+									onOpenChange={useStackStore(
+										(s) => s.setTanstackAdvancedOpen,
+									)}
+									className="rounded-2xl border bg-muted/20"
+								>
+									<CollapsibleTrigger className="flex w-full items-center justify-between p-4 text-left">
+										<div>
+											<div className="font-medium">Advanced options</div>
+											<div className="text-sm text-muted-foreground">
+												Router-only, toolchain, deployment target.
+											</div>
+										</div>
+										<FiChevronDown
+											className={`h-4 w-4 transition-transform ${
+												useStackStore((s) => s.tanstackAdvancedOpen)
+													? "rotate-180"
+													: ""
+											}`}
+										/>
+									</CollapsibleTrigger>
+									<CollapsibleContent className="border-t p-4 pt-5">
+										<div className="space-y-5">
+											<div className="flex items-center justify-between">
+												<div className="space-y-0.5">
+													<Label className="text-sm font-medium">
+														Router-only mode
+													</Label>
+													<p className="text-xs text-muted-foreground">
+														Skip SSR, deploy as static SPA
+													</p>
+												</div>
+												<Switch
+													checked={useStackStore(
+														(s) => s.tanstack.routerOnly,
+													)}
+													onCheckedChange={useStackStore(
+														(s) => s.setTanstackRouterOnly,
+													)}
+												/>
+											</div>
+
+											<div className="space-y-3">
+												<Label className="text-sm font-medium">Toolchain</Label>
+												<div className="grid grid-cols-2 gap-2">
+													{TANSTACK_TOOLCHAIN_OPTIONS.map((opt) => (
+														<Button
+															key={opt.value}
+															size="sm"
+															variant={
+																useStackStore(
+																	(s) => s.tanstack.toolchain,
+																) === opt.value
+																	? "default"
+																	: "outline"
+															}
+															onClick={() =>
+																useStackStore(
+																	(s) => s.setTanstackToolchain,
+																)(opt.value)
+															}
+															className="rounded-lg justify-start"
+														>
+															<FiCode className="w-3.5 h-3.5 mr-2" />
+															{opt.label}
+														</Button>
+													))}
+												</div>
+											</div>
+
+											<div className="space-y-3">
+												<Label className="text-sm font-medium">
+													Deployment target
+												</Label>
+												<div className="grid grid-cols-2 gap-2">
+													{TANSTACK_DEPLOYMENT_OPTIONS.map((opt) => (
+														<Button
+															key={opt.value}
+															size="sm"
+															variant={
+																useStackStore(
+																	(s) => s.tanstack.deployment,
+																) === opt.value
+																	? "default"
+																	: "outline"
+															}
+															onClick={() =>
+																useStackStore(
+																	(s) => s.setTanstackDeployment,
+																)(opt.value)
+															}
+															className="rounded-lg justify-start"
+														>
+															<SiCloudflare className="w-3.5 h-3.5 mr-2" />
+															{opt.label}
+														</Button>
+													))}
+												</div>
+											</div>
+
+											<div className="flex items-center justify-between">
+												<div className="space-y-0.5">
+													<Label className="text-sm font-medium">
+														Include examples
+													</Label>
+													<p className="text-xs text-muted-foreground">
+														Add demo/example pages to scaffold
+													</p>
+												</div>
+												<Switch
+													checked={useStackStore(
+														(s) => s.tanstack.examples,
+													)}
+													onCheckedChange={useStackStore(
+														(s) => s.setTanstackExamples,
+													)}
+												/>
+											</div>
+										</div>
+									</CollapsibleContent>
+								</Collapsible>
+							</div>
+						</div>
+					</motion.div>
+				)}
+			</AnimatePresence>
 
 			<Separator className="ml-12 w-[calc(100%-3rem)]" />
 

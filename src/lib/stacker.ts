@@ -1,28 +1,80 @@
+import { z } from "zod";
 import type { TweakcnRegistryThemeId } from "./tweakcn-registry-themes";
 import { TWEAKCN_REGISTRY_THEMES } from "./tweakcn-registry-themes";
 
-export type PackageManager = "bun" | "pnpm" | "npm" | "yarn";
+export const PackageManagerSchema = z.enum(["bun", "pnpm", "npm", "yarn"]);
+export type PackageManager = z.infer<typeof PackageManagerSchema>;
+
+export const FrameworkSchema = z.enum([
+	"Next.js",
+	"Vite",
+	"TanStack Start",
+	"React Router",
+	"Astro",
+	"Laravel",
+]);
+export type Framework = z.infer<typeof FrameworkSchema>;
+
+export const RuntimeSchema = z.enum(["React", "Solid"]);
+export type Runtime = z.infer<typeof RuntimeSchema>;
+
+export const UiSystemSchema = z.enum(["shadcn/ui", "Base UI", "Radix primitives", ""]);
+export type UiSystem = z.infer<typeof UiSystemSchema>;
+
+export const ShadcnBaseSchema = z.enum(["radix", "base"]);
+export type ShadcnBase = z.infer<typeof ShadcnBaseSchema>;
+
+export const ShadcnCliStyleSchema = z.enum(["new-york", "default"]);
+export type ShadcnCliStyle = z.infer<typeof ShadcnCliStyleSchema>;
+
+export const ShadcnStyleSchema = z.enum([
+	"vega",
+	"nova",
+	"maia",
+	"lyra",
+	"mira",
+	"luma",
+	"new-york",
+	"default",
+]);
+export type ShadcnStyle = z.infer<typeof ShadcnStyleSchema>;
+
+export const ShadcnBorderRadiusSchema = z.enum([
+	"default",
+	"none",
+	"sm",
+	"md",
+	"lg",
+]);
+export type ShadcnBorderRadius = z.infer<typeof ShadcnBorderRadiusSchema>;
+
+export const NextJsLinterSchema = z.enum(["eslint", "biome", "none"]);
+export type NextJsLinter = z.infer<typeof NextJsLinterSchema>;
+
+export const NextJsBundlerSchema = z.enum(["turbopack", "webpack"]);
+export type NextJsBundler = z.infer<typeof NextJsBundlerSchema>;
+
+export const TanStackToolchainSchema = z.enum([
+	"eslint",
+	"biome",
+	"rome",
+	"none",
+]);
+export type TanStackToolchain = z.infer<typeof TanStackToolchainSchema>;
+
+export const TanStackDeploymentSchema = z.enum([
+	"cloudflare-pages",
+	"cloudflare-workers",
+	"deno-deploy",
+	"netlify",
+	"vercel",
+	"node",
+	"none",
+]);
+export type TanStackDeployment = z.infer<typeof TanStackDeploymentSchema>;
+
 export type SidebarTab = "General" | "Frontend" | "Backend" | "Addons";
 export type PreviewTab = "Code" | "Preview";
-export type Framework =
-	| "Next.js"
-	| "Vite"
-	| "TanStack Start"
-	| "React Router"
-	| "Astro"
-	| "Laravel";
-export type Runtime = "React" | "Solid";
-export type UiSystem = "shadcn/ui" | "Base UI" | "Radix primitives" | "";
-export type ShadcnBase = "radix" | "base";
-export type ShadcnCliStyle = "new-york" | "default";
-export type ShadcnStyle =
-	| ShadcnCliStyle
-	| "vega"
-	| "nova"
-	| "maia"
-	| "lyra"
-	| "mira"
-	| "luma";
 
 export const SHADCN_STYLE_OPTIONS: Array<{
 	value: ShadcnStyle;
@@ -38,8 +90,6 @@ export const SHADCN_STYLE_OPTIONS: Array<{
 	{ value: "default", label: "Default" },
 ];
 
-/** Matches shadcn/ui docs: Border Radius → Default/None/Small/Medium/Large */
-export type ShadcnBorderRadius = "default" | "none" | "sm" | "md" | "lg";
 export const SHADCN_BORDER_RADIUS_OPTIONS: Array<{
 	value: ShadcnBorderRadius;
 	label: string;
@@ -51,6 +101,48 @@ export const SHADCN_BORDER_RADIUS_OPTIONS: Array<{
 	{ value: "lg", label: "Large" },
 ];
 
+export const NEXTJS_LINTER_OPTIONS: Array<{
+	value: NextJsLinter;
+	label: string;
+	description: string;
+}> = [
+	{ value: "eslint", label: "ESLint", description: "Traditional + popular linter" },
+	{ value: "biome", label: "Biome", description: "Fast linter + formatter" },
+	{ value: "none", label: "None", description: "Skip linter config" },
+];
+
+export const NEXTJS_BUNDLER_OPTIONS: Array<{
+	value: NextJsBundler;
+	label: string;
+	description: string;
+}> = [
+	{ value: "turbopack", label: "Turbopack", description: "Recommended, Rust-based" },
+	{ value: "webpack", label: "Webpack", description: "Legacy bundler" },
+];
+
+export const TANSTACK_TOOLCHAIN_OPTIONS: Array<{
+	value: TanStackToolchain;
+	label: string;
+}> = [
+	{ value: "eslint", label: "ESLint" },
+	{ value: "biome", label: "Biome" },
+	{ value: "rome", label: "Rome" },
+	{ value: "none", label: "None" },
+];
+
+export const TANSTACK_DEPLOYMENT_OPTIONS: Array<{
+	value: TanStackDeployment;
+	label: string;
+}> = [
+	{ value: "cloudflare-pages", label: "Cloudflare Pages" },
+	{ value: "cloudflare-workers", label: "Cloudflare Workers" },
+	{ value: "deno-deploy", label: "Deno Deploy" },
+	{ value: "netlify", label: "Netlify" },
+	{ value: "vercel", label: "Vercel" },
+	{ value: "node", label: "Node.js" },
+	{ value: "none", label: "None" },
+];
+
 export function resolveShadcnCliStyle(style: ShadcnStyle): ShadcnCliStyle {
 	if (style === "default") {
 		return "default";
@@ -58,8 +150,25 @@ export function resolveShadcnCliStyle(style: ShadcnStyle): ShadcnCliStyle {
 	return "new-york";
 }
 
-/** tweakcn registry id, plus legacy ids still accepted in saved manifests */
 export type TweakcnTheme = TweakcnRegistryThemeId | "default" | "darkmatter";
+
+export const NextJsOptionsSchema = z.object({
+	srcDir: z.boolean().default(false),
+	importAlias: z.string().default("@/*"),
+	linter: NextJsLinterSchema.default("eslint"),
+	bundler: NextJsBundlerSchema.default("turbopack"),
+	reactCompiler: z.boolean().default(false),
+	agentsMd: z.boolean().default(true),
+});
+export type NextJsOptions = z.infer<typeof NextJsOptionsSchema>;
+
+export const TanStackCliOptionsSchema = z.object({
+	routerOnly: z.boolean().default(false),
+	toolchain: TanStackToolchainSchema.default("eslint"),
+	deployment: TanStackDeploymentSchema.default("none"),
+	examples: z.boolean().default(true),
+});
+export type TanStackCliOptions = z.infer<typeof TanStackCliOptionsSchema>;
 
 export interface StackerManifest {
 	version: 1;
@@ -73,6 +182,8 @@ export interface StackerManifest {
 		framework: Framework;
 		runtime: Runtime;
 		id: string;
+		nextjs?: NextJsOptions;
+		tanstack?: TanStackCliOptions;
 	};
 	frontend: {
 		uiSystem: UiSystem;
@@ -104,6 +215,63 @@ export interface StackerManifest {
 		animations: "Framer Motion" | "Motion" | "AutoAnimate" | "GSAP" | "";
 		packages: string[];
 	};
+}
+
+export const ShadcnConfigSchema = z.object({
+	base: ShadcnBaseSchema,
+	style: z.string(),
+	baseColor: z.string(),
+	borderRadius: z.string(),
+	iconLibrary: z.string(),
+	font: z.string(),
+	tweakcnTheme: z.string(),
+	components: z.array(z.string()),
+});
+
+export const StackerManifestSchema = z.object({
+	version: z.literal(1),
+	project: z.object({
+		name: z.string().min(1),
+		packageManager: PackageManagerSchema,
+		git: z.boolean(),
+		install: z.boolean(),
+	}),
+	starter: z.object({
+		framework: FrameworkSchema,
+		runtime: RuntimeSchema,
+		id: z.string(),
+		nextjs: NextJsOptionsSchema.optional(),
+		tanstack: TanStackCliOptionsSchema.optional(),
+	}),
+	frontend: z.object({
+		uiSystem: UiSystemSchema,
+		shadcn: ShadcnConfigSchema.nullable(),
+		tanstackAddons: z.array(z.string()),
+	}),
+	backend: z.object({
+		database: z.string(),
+		orm: z.string(),
+		auth: z.string(),
+		apiLayer: z.string(),
+	}),
+	addons: z.object({
+		integrations: z.array(z.string()),
+		deployment: z.string(),
+		monitoring: z.string(),
+		i18n: z.string(),
+		devTooling: z.array(z.string()),
+		typings: z.string(),
+		animations: z.string(),
+		packages: z.array(z.string()),
+	}),
+});
+
+export function validateManifest(data: unknown): StackerManifest {
+	return StackerManifestSchema.parse(data);
+}
+
+export function safeValidateManifest(data: unknown) {
+	return StackerManifestSchema.safeParse(data);
 }
 
 export interface GeneratedFile {
@@ -370,8 +538,26 @@ export function buildManifest(input: {
 	typings: "Zod" | "ArkType" | "";
 	animations: "Framer Motion" | "Motion" | "AutoAnimate" | "GSAP" | "";
 	packages: string[];
+	nextjs?: Partial<NextJsOptions>;
+	tanstack?: Partial<TanStackCliOptions>;
 }): StackerManifest {
 	const frameworkMeta = getFrameworkMeta(input.framework);
+
+	const starter: StackerManifest["starter"] = {
+		framework: input.framework,
+		runtime: frameworkMeta.runtimes.includes(input.runtime)
+			? input.runtime
+			: frameworkMeta.runtimes[0],
+		id: frameworkMeta.starterId,
+	};
+
+	if (input.framework === "Next.js" && input.nextjs) {
+		starter.nextjs = NextJsOptionsSchema.parse(input.nextjs);
+	}
+
+	if (input.framework === "TanStack Start" && input.tanstack) {
+		starter.tanstack = TanStackCliOptionsSchema.parse(input.tanstack);
+	}
 
 	return {
 		version: 1,
@@ -381,13 +567,7 @@ export function buildManifest(input: {
 			git: input.git,
 			install: input.install,
 		},
-		starter: {
-			framework: input.framework,
-			runtime: frameworkMeta.runtimes.includes(input.runtime)
-				? input.runtime
-				: frameworkMeta.runtimes[0],
-			id: frameworkMeta.starterId,
-		},
+		starter,
 		frontend: {
 			uiSystem: input.uiSystem,
 			shadcn:
@@ -473,11 +653,24 @@ export function buildCommandPlan(manifest: StackerManifest) {
 	const gitFlag = manifest.project.git ? "" : " --disable-git";
 
 	switch (manifest.starter.framework) {
-		case "Next.js":
+		case "Next.js": {
+			const nx = manifest.starter.nextjs;
+			const srcDir = nx?.srcDir ? "--src-dir" : "";
+			const importAlias =
+				nx?.importAlias && nx.importAlias !== "@/*"
+					? `--import-alias ${nx.importAlias}`
+					: "";
+			const linter =
+				nx?.linter === "none" ? "--no-linter" : nx?.linter === "biome" ? "--biome" : "--eslint";
+			const bundler = nx?.bundler === "webpack" ? "--webpack" : "--turbopack";
+			const reactCompiler = nx?.reactCompiler ? "--react-compiler" : "";
+			const agentsMd = nx?.agentsMd === false ? "--no-agents-md" : "";
+
 			commands.push(
-				`${runner} create-next-app@latest ${targetDir} --ts --tailwind --app --eslint --yes${installFlag}${gitFlag}`,
+				`${runner} create-next-app@latest ${targetDir} --ts --tailwind --app ${linter} ${bundler} ${srcDir} ${importAlias} ${reactCompiler} ${agentsMd} --yes${installFlag}${gitFlag}`,
 			);
 			break;
+		}
 		case "Vite":
 			commands.push(
 				`${runner} create-vite@latest ${targetDir} --template ${manifest.starter.runtime === "Solid" ? "solid-ts" : "react-ts"}`,
@@ -486,11 +679,25 @@ export function buildCommandPlan(manifest: StackerManifest) {
 				commands.push(`# install skipped by Stacker preference`);
 			}
 			break;
-		case "TanStack Start":
+		case "TanStack Start": {
+			const ts = manifest.starter.tanstack;
+			const routerOnly = ts?.routerOnly ? "--router-only" : "";
+			const toolchain = ts?.toolchain && ts.toolchain !== "none" ? `--toolchain ${ts.toolchain}` : "";
+			const deployment =
+				ts?.deployment && ts.deployment !== "none"
+					? `--deployment ${ts.deployment}`
+					: "";
+			const examples = ts?.examples === false ? "--no-examples" : "";
+			const addOns =
+				manifest.frontend.tanstackAddons.length > 0
+					? `--add-ons ${manifest.frontend.tanstackAddons.join(",")}`
+					: "";
+
 			commands.push(
-				`${runner} @tanstack/cli@latest create ${targetDir} --framework ${manifest.starter.runtime.toLowerCase()} --package-manager ${manifest.project.packageManager}${manifest.frontend.tanstackAddons.length > 0 ? ` --add-ons ${manifest.frontend.tanstackAddons.join(",")}` : ""}${manifest.project.install ? "" : " --no-install"}${manifest.project.git ? "" : " --no-git"} --yes`,
+				`${runner} @tanstack/cli@latest create ${targetDir} --framework ${manifest.starter.runtime.toLowerCase()} --package-manager ${manifest.project.packageManager} ${addOns} ${toolchain} ${deployment} ${routerOnly} ${examples} --yes${manifest.project.install ? "" : " --no-install"}${manifest.project.git ? "" : " --no-git"}`,
 			);
 			break;
+		}
 		case "React Router":
 			commands.push(
 				`${runner} create-react-router@latest ${targetDir}${manifest.project.install ? "" : " --no-install"}`,

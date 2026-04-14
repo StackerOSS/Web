@@ -1,5 +1,7 @@
-import { Calendar, Github, Search, Star, Zap } from "lucide-react";
+import { useState } from "react";
+import { Calendar, ChevronDown, Github, MoreHorizontal, Search, Settings, Star, Trash2, User, Zap } from "lucide-react";
 import type { CSSProperties } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
 	PiCalendarBlank,
 	PiGithubLogo,
@@ -13,6 +15,8 @@ import {
 	TbCalendar,
 	TbSearch,
 	TbStar,
+	TbTrash,
+	TbUser,
 } from "react-icons/tb";
 import {
 	PREVIEW_FONT_STACK,
@@ -99,6 +103,8 @@ function getIcons(iconLibrary: string) {
 				CalendarIcon: TbCalendar,
 				GithubIcon: TbBrandGithub,
 				ZapIcon: TbBolt,
+				DeleteIcon: TbTrash,
+				UserIcon: TbUser,
 			};
 		case "Phosphor":
 			return {
@@ -107,6 +113,8 @@ function getIcons(iconLibrary: string) {
 				CalendarIcon: PiCalendarBlank,
 				GithubIcon: PiGithubLogo,
 				ZapIcon: PiSparkle,
+				DeleteIcon: Trash2,
+				UserIcon: User,
 			};
 		default:
 			return {
@@ -115,6 +123,8 @@ function getIcons(iconLibrary: string) {
 				CalendarIcon: Calendar,
 				GithubIcon: Github,
 				ZapIcon: Zap,
+				DeleteIcon: Trash2,
+				UserIcon: User,
 			};
 	}
 }
@@ -137,11 +147,16 @@ export function StackPreview() {
 	const install = useStackStore((state) => state.install);
 	const previewMode = useStackStore((state) => state.previewMode);
 
+	const [showDialog, setShowDialog] = useState(false);
+	const [showDropdown, setShowDropdown] = useState(false);
+	const [sliderValue, setSliderValue] = useState(65);
+	const [showToast, setShowToast] = useState(false);
+
 	const currentRadius = radiusMap[borderRadius] ?? radiusMap.default;
 	const fontFamily = fontStack(font);
 	const palette = pickPalette(baseColor, tweakcnTheme, previewMode);
 
-	const { SearchIcon, StarIcon, CalendarIcon, GithubIcon, ZapIcon } =
+	const { SearchIcon, StarIcon, CalendarIcon, GithubIcon, ZapIcon, DeleteIcon, UserIcon } =
 		getIcons(iconLibrary);
 
 	const rootStyle = {
@@ -208,7 +223,7 @@ export function StackPreview() {
 
 	return (
 		<div
-			className="animate-in fade-in duration-300 w-full h-full pb-3"
+			className="animate-in fade-in duration-300 w-full h-full pb-3 overflow-y-auto"
 			style={{
 				...rootStyle,
 				backgroundColor: "var(--background)",
@@ -348,7 +363,7 @@ export function StackPreview() {
 				</section>
 
 				<section>
-					<h3 className="mb-3 text-sm font-semibold">Buttons</h3>
+					<h3 className="mb-3 text-sm font-semibold">Buttons & Actions</h3>
 					<div className="flex flex-wrap gap-2">
 						{(
 							[
@@ -370,7 +385,7 @@ export function StackPreview() {
 							<button
 								key={label}
 								type="button"
-								className="inline-flex items-center gap-2 border px-4 py-2 text-sm font-medium"
+								className="inline-flex items-center gap-2 border px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90"
 								style={{
 									borderRadius: currentRadius,
 									backgroundColor: bg,
@@ -383,6 +398,19 @@ export function StackPreview() {
 								{label}
 							</button>
 						))}
+						<button
+							type="button"
+							className="inline-flex items-center gap-2 border border-dashed px-4 py-2 text-sm font-medium transition-opacity hover:opacity-80"
+							style={{
+								borderRadius: currentRadius,
+								borderColor: "var(--border)",
+								backgroundColor: "transparent",
+								color: "var(--muted-foreground)",
+							}}
+						>
+							<Settings className="h-4 w-4" />
+							Settings
+						</button>
 					</div>
 				</section>
 
@@ -431,7 +459,7 @@ export function StackPreview() {
 						<textarea
 							id="stacker-preview-message"
 							readOnly
-							rows={3}
+							rows={2}
 							placeholder="Write something…"
 							className="mt-1 w-full resize-none border px-3 py-2 text-sm outline-none"
 							style={{
@@ -441,36 +469,51 @@ export function StackPreview() {
 								color: "var(--foreground)",
 							}}
 						/>
-						<div className="mt-4 flex flex-wrap items-center gap-4">
+						<div className="mt-4 flex items-center gap-4">
 							<div
 								className="flex items-center gap-2 text-sm"
 								style={{ color: "var(--foreground)" }}
 							>
-								<span
-									className="inline-flex h-4 w-4 items-center justify-center border"
-									style={{
-										borderRadius: radiusMap.sm,
-										borderColor: "var(--primary)",
-										backgroundColor: "var(--primary)",
-									}}
-									aria-hidden
-								>
-									<span
-										className="h-2 w-2"
-										style={{ backgroundColor: "var(--primary-foreground)" }}
-									/>
-								</span>
+								<input
+									type="checkbox"
+									className="h-4 w-4"
+									style={{ accentColor: "var(--primary)" }}
+								/>
 								<span>Remember me</span>
 							</div>
 							<div
-								className="relative h-7 w-12 rounded-full"
-								style={{ backgroundColor: "var(--primary)" }}
+								className="flex items-center gap-2 text-sm"
+								style={{ color: "var(--muted-foreground)" }}
 							>
-								<div
-									className="absolute top-0.5 h-6 w-6 rounded-full bg-white shadow"
-									style={{ right: "2px" }}
+								<input
+									type="radio"
+									name="plan"
+									className="h-4 w-4"
+									style={{ accentColor: "var(--primary)" }}
 								/>
+								<span>Pro</span>
 							</div>
+						</div>
+						<div className="mt-4">
+							<div
+								className="flex justify-between text-xs mb-2"
+								style={{ color: "var(--muted-foreground)" }}
+							>
+								<span>Volume</span>
+								<span>{sliderValue}%</span>
+							</div>
+							<input
+								type="range"
+								min="0"
+								max="100"
+								value={sliderValue}
+								onChange={(e) => setSliderValue(Number(e.target.value))}
+								className="w-full h-2 appearance-none cursor-pointer"
+								style={{
+									borderRadius: "999px",
+									backgroundColor: "var(--muted)",
+								}}
+							/>
 						</div>
 					</div>
 
@@ -486,9 +529,9 @@ export function StackPreview() {
 							className="mb-4 text-sm font-semibold"
 							style={{ color: "var(--card-foreground)" }}
 						>
-							Badges & alerts
+							Badges, avatars & states
 						</h3>
-						<div className="flex flex-wrap gap-2">
+						<div className="flex flex-wrap gap-2 mb-4">
 							{["Default", "Secondary", "Outline", "Destructive"].map((b) => (
 								<span
 									key={b}
@@ -519,31 +562,181 @@ export function StackPreview() {
 								</span>
 							))}
 						</div>
-						<div
-							className="mt-4 border px-3 py-2 text-sm"
+						<div className="flex items-center gap-3">
+							<div
+								className="h-10 w-10 rounded-full flex items-center justify-center text-sm font-medium"
+								style={{
+									backgroundColor: "var(--primary)",
+									color: "var(--primary-foreground)",
+								}}
+							>
+								<UserIcon className="h-5 w-5" />
+							</div>
+							<div
+								className="h-10 w-10 rounded-full"
+								style={{ backgroundColor: "var(--accent)" }}
+							/>
+							<div
+								className="h-10 w-10 rounded-full"
+								style={{ backgroundColor: "var(--muted)" }}
+							/>
+							<span
+								className="inline-flex h-2 w-2 rounded-full"
+								style={{ backgroundColor: "var(--primary)" }}
+							/>
+						</div>
+						<div className="mt-4 flex gap-2">
+							<span
+								className="inline-flex items-center gap-1 border px-2 py-1 text-xs"
+								style={{
+									borderRadius: currentRadius,
+									borderColor: "var(--border)",
+									backgroundColor: "var(--muted)",
+									color: "var(--muted-foreground)",
+								}}
+							>
+								<span
+									className="h-1.5 w-1.5 rounded-full"
+									style={{ backgroundColor: "#22c55e" }}
+								/>
+								Active
+							</span>
+							<span
+								className="inline-flex items-center gap-1 border px-2 py-1 text-xs"
+								style={{
+									borderRadius: currentRadius,
+									borderColor: "var(--border)",
+									backgroundColor: "var(--muted)",
+									color: "var(--muted-foreground)",
+								}}
+							>
+								<span
+									className="h-1.5 w-1.5 rounded-full"
+									style={{ backgroundColor: "#eab308" }}
+								/>
+								Pending
+							</span>
+						</div>
+					</div>
+				</section>
+
+				<section
+					className="border p-5"
+					style={{
+						borderRadius: currentRadius,
+						borderColor: "var(--border)",
+						backgroundColor: "var(--card)",
+					}}
+				>
+					<h3
+						className="mb-4 text-sm font-semibold"
+						style={{ color: "var(--card-foreground)" }}
+					>
+						Interactive components
+					</h3>
+					<div className="flex flex-wrap gap-3">
+						<button
+							type="button"
+							className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium"
+							style={{
+								borderRadius: currentRadius,
+								backgroundColor: "var(--primary)",
+								color: "var(--primary-foreground)",
+							}}
+							onClick={() => setShowDialog(true)}
+						>
+							Open Dialog
+						</button>
+						<div className="relative">
+							<button
+								type="button"
+								className="inline-flex items-center gap-2 border px-4 py-2 text-sm font-medium"
+								style={{
+									borderRadius: currentRadius,
+									borderColor: "var(--border)",
+									backgroundColor: "var(--card)",
+									color: "var(--foreground)",
+								}}
+								onClick={() => setShowDropdown(!showDropdown)}
+							>
+								Dropdown <ChevronDown className="h-4 w-4" />
+							</button>
+							<AnimatePresence>
+								{showDropdown && (
+									<motion.div
+										initial={{ opacity: 0, y: -4 }}
+										animate={{ opacity: 1, y: 0 }}
+										exit={{ opacity: 0, y: -4 }}
+										className="absolute top-full left-0 mt-2 w-48 border shadow-lg z-50"
+										style={{
+											borderRadius: currentRadius,
+											borderColor: "var(--border)",
+											backgroundColor: "var(--popover)",
+											color: "var(--popover-foreground)",
+										}}
+									>
+										<div className="p-1">
+											{[
+												{ icon: UserIcon, label: "Profile" },
+												{ icon: Settings, label: "Settings" },
+												{ icon: DeleteIcon, label: "Delete", destructive: true },
+											].map(({ icon: Icon, label, destructive }) => (
+												<button
+													key={label}
+													type="button"
+													className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-opacity-10"
+													style={{
+														borderRadius: radiusMap.sm,
+														color: destructive ? "var(--destructive)" : "inherit",
+													}}
+												>
+													<Icon className="h-4 w-4" />
+													{label}
+												</button>
+											))}
+										</div>
+									</motion.div>
+								)}
+							</AnimatePresence>
+						</div>
+						<button
+							type="button"
+							className="inline-flex items-center gap-2 border px-4 py-2 text-sm font-medium"
 							style={{
 								borderRadius: currentRadius,
 								borderColor: "var(--border)",
-								backgroundColor: "var(--muted)",
+								backgroundColor: "var(--card)",
 								color: "var(--foreground)",
 							}}
-						>
-							Neutral alert — uses muted surface and border tokens.
-						</div>
-						<div
-							className="mt-2 border px-3 py-2 text-sm"
-							style={{
-								borderRadius: currentRadius,
-								borderColor:
-									"color-mix(in srgb, var(--destructive) 35%, var(--border))",
-								backgroundColor:
-									"color-mix(in srgb, var(--destructive) 12%, var(--background))",
-								color: "var(--destructive)",
+							onClick={() => {
+								setShowToast(true);
+								setTimeout(() => setShowToast(false), 3000);
 							}}
 						>
-							Destructive alert — error or irreversible action.
-						</div>
+							Show Toast
+						</button>
 					</div>
+					<AnimatePresence>
+						{showToast && (
+							<motion.div
+								initial={{ opacity: 0, y: 20, x: 0 }}
+								animate={{ opacity: 1, y: 0, x: 0 }}
+								exit={{ opacity: 0, y: 20, x: 0 }}
+								className="mt-4 flex items-center gap-3 border px-4 py-3 shadow-lg"
+								style={{
+									borderRadius: currentRadius,
+									borderColor: "var(--border)",
+									backgroundColor: "var(--accent)",
+									color: "var(--accent-foreground)",
+								}}
+							>
+								<StarIcon className="h-4 w-4" />
+								<span className="text-sm font-medium">
+									Saved successfully!
+								</span>
+							</motion.div>
+						)}
+					</AnimatePresence>
 				</section>
 
 				<section
@@ -572,7 +765,7 @@ export function StackPreview() {
 							<button
 								key={tab}
 								type="button"
-								className="px-3 py-1.5 text-xs font-medium"
+								className="px-3 py-1.5 text-xs font-medium transition-all"
 								style={{
 									borderRadius: radiusMap.sm,
 									backgroundColor: i === 0 ? "var(--card)" : "transparent",
@@ -585,28 +778,81 @@ export function StackPreview() {
 							</button>
 						))}
 					</div>
-					<div className="mt-4">
-						<div
-							className="flex justify-between text-xs"
-							style={{ color: "var(--muted-foreground)" }}
-						>
-							<span>Progress</span>
-							<span>72%</span>
-						</div>
-						<div
-							className="mt-1 h-2 overflow-hidden"
-							style={{
-								borderRadius: "999px",
-								backgroundColor: "var(--muted)",
-							}}
-						>
+					<div className="mt-4 grid gap-4 sm:grid-cols-3">
+						<div>
 							<div
-								className="h-full w-[72%]"
+								className="flex justify-between text-xs mb-1"
+								style={{ color: "var(--muted-foreground)" }}
+							>
+								<span>Progress</span>
+								<span>72%</span>
+							</div>
+							<div
+								className="h-2 overflow-hidden"
 								style={{
 									borderRadius: "999px",
-									backgroundColor: "var(--primary)",
+									backgroundColor: "var(--muted)",
 								}}
-							/>
+							>
+								<div
+									className="h-full transition-all"
+									style={{
+										width: "72%",
+										borderRadius: "999px",
+										backgroundColor: "var(--primary)",
+									}}
+								/>
+							</div>
+						</div>
+						<div>
+							<div
+								className="flex justify-between text-xs mb-1"
+								style={{ color: "var(--muted-foreground)" }}
+							>
+								<span>Storage</span>
+								<span>45%</span>
+							</div>
+							<div
+								className="h-2 overflow-hidden"
+								style={{
+									borderRadius: "999px",
+									backgroundColor: "var(--muted)",
+								}}
+							>
+								<div
+									className="h-full"
+									style={{
+										width: "45%",
+										borderRadius: "999px",
+										backgroundColor: "var(--accent)",
+									}}
+								/>
+							</div>
+						</div>
+						<div>
+							<div
+								className="flex justify-between text-xs mb-1"
+								style={{ color: "var(--muted-foreground)" }}
+							>
+								<span>CPU</span>
+								<span>23%</span>
+							</div>
+							<div
+								className="h-2 overflow-hidden"
+								style={{
+									borderRadius: "999px",
+									backgroundColor: "var(--muted)",
+								}}
+							>
+								<div
+									className="h-full"
+									style={{
+										width: "23%",
+										borderRadius: "999px",
+										backgroundColor: "var(--secondary)",
+									}}
+								/>
+							</div>
 						</div>
 					</div>
 				</section>
@@ -620,13 +866,23 @@ export function StackPreview() {
 					}}
 				>
 					<div
-						className="border-b px-4 py-3 text-sm font-medium"
+						className="border-b px-4 py-3 text-sm font-medium flex items-center justify-between"
 						style={{
 							borderColor: "var(--border)",
 							color: "var(--card-foreground)",
 						}}
 					>
-						Sample data table
+						<span>Sample data table</span>
+						<button
+							type="button"
+							className="p-1.5"
+							style={{
+								borderRadius: radiusMap.sm,
+								backgroundColor: "var(--muted)",
+							}}
+						>
+							<MoreHorizontal className="h-4 w-4" />
+						</button>
 					</div>
 					<table className="w-full text-left text-sm">
 						<thead>
@@ -652,21 +908,41 @@ export function StackPreview() {
 									className="border-t"
 									style={{ borderColor: "var(--border)" }}
 								>
-									<td className="px-4 py-2">{a}</td>
+									<td className="px-4 py-3">
+										<div className="flex items-center gap-3">
+											<div
+												className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-medium"
+												style={{
+													backgroundColor: "var(--primary)",
+													color: "var(--primary-foreground)",
+												}}
+											>
+												{a.split(" ").map((n) => n[0]).join("")}
+											</div>
+											<span>{a}</span>
+										</div>
+									</td>
 									<td
-										className="px-4 py-2"
+										className="px-4 py-3"
 										style={{ color: "var(--muted-foreground)" }}
 									>
 										{b}
 									</td>
-									<td className="px-4 py-2 text-right">
+									<td className="px-4 py-3 text-right">
 										<span
-											className="inline-block rounded-full px-2 py-0.5 text-xs"
+											className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs"
 											style={{
 												backgroundColor: "var(--accent)",
 												color: "var(--accent-foreground)",
 											}}
 										>
+											<span
+												className="h-1.5 w-1.5 rounded-full"
+												style={{
+													backgroundColor:
+														c === "Active" ? "#22c55e" : "#eab308",
+												}}
+											/>
 											{c}
 										</span>
 									</td>
@@ -771,6 +1047,82 @@ export function StackPreview() {
 						</div>
 					))}
 				</div>
+
+				<AnimatePresence>
+					{showDialog && (
+						<>
+							<motion.div
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								exit={{ opacity: 0 }}
+								className="fixed inset-0 bg-black/50 z-50"
+								onClick={() => setShowDialog(false)}
+							/>
+							<motion.div
+								initial={{ opacity: 0, scale: 0.95, y: 20 }}
+								animate={{ opacity: 1, scale: 1, y: 0 }}
+								exit={{ opacity: 0, scale: 0.95, y: 20 }}
+								className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md border shadow-2xl z-50"
+								style={{
+									borderRadius: currentRadius,
+									borderColor: "var(--border)",
+									backgroundColor: "var(--popover)",
+									color: "var(--popover-foreground)",
+								}}
+							>
+								<div
+									className="border-b px-6 py-4 flex items-center justify-between"
+									style={{ borderColor: "var(--border)" }}
+								>
+									<h2 className="text-lg font-semibold">Dialog Title</h2>
+									<button
+										type="button"
+										className="p-1 hover:bg-opacity-10"
+										onClick={() => setShowDialog(false)}
+									>
+										×
+									</button>
+								</div>
+								<div className="px-6 py-4">
+									<p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+										This is a dialog component. Dialogs display important
+										information that requires the user's attention or input.
+									</p>
+								</div>
+								<div
+									className="border-t px-6 py-4 flex justify-end gap-3"
+									style={{ borderColor: "var(--border)" }}
+								>
+									<button
+										type="button"
+										className="px-4 py-2 text-sm font-medium border"
+										style={{
+											borderRadius: currentRadius,
+											borderColor: "var(--border)",
+											backgroundColor: "transparent",
+											color: "var(--foreground)",
+										}}
+										onClick={() => setShowDialog(false)}
+									>
+										Cancel
+									</button>
+									<button
+										type="button"
+										className="px-4 py-2 text-sm font-medium"
+										style={{
+											borderRadius: currentRadius,
+											backgroundColor: "var(--primary)",
+											color: "var(--primary-foreground)",
+										}}
+										onClick={() => setShowDialog(false)}
+									>
+										Confirm
+									</button>
+								</div>
+							</motion.div>
+						</>
+					)}
+				</AnimatePresence>
 			</div>
 		</div>
 	);
