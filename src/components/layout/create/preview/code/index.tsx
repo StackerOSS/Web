@@ -96,7 +96,10 @@ interface FileExplorerProps {
 	search: string;
 }
 
-function matchesSearch(node: PreviewVirtualDirectory | PreviewVirtualFile, query: string): boolean {
+function matchesSearch(
+	node: PreviewVirtualDirectory | PreviewVirtualFile,
+	query: string,
+): boolean {
 	const q = query.toLowerCase();
 	if (node.type === "file") return node.name.toLowerCase().includes(q);
 	return node.children.some((c) => matchesSearch(c, query));
@@ -117,7 +120,9 @@ function ExplorerNode({
 	onSelect: (file: PreviewVirtualFile) => void;
 	search: string;
 	expandedFolders: Record<string, boolean>;
-	setExpandedFolders: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+	setExpandedFolders: React.Dispatch<
+		React.SetStateAction<Record<string, boolean>>
+	>;
 }): ReactElement | null {
 	const indent = 8 + depth * 14;
 
@@ -140,7 +145,10 @@ function ExplorerNode({
 				}`}
 				style={{ paddingLeft: `${indent + 18}px`, paddingRight: "8px" }}
 			>
-				<FileIcon className="h-3.5 w-3.5 shrink-0 flex-none" style={{ color }} />
+				<FileIcon
+					className="h-3.5 w-3.5 shrink-0 flex-none"
+					style={{ color }}
+				/>
 				<span className="truncate font-medium">{node.name}</span>
 			</button>
 		);
@@ -172,17 +180,17 @@ function ExplorerNode({
 			</button>
 			{isOpen
 				? node.children.map((child) => (
-					<ExplorerNode
-						key={child.path}
-						node={child}
-						depth={depth + 1}
-						selectedPath={selectedPath}
-						onSelect={onSelect}
-						search={search}
-						expandedFolders={expandedFolders}
-						setExpandedFolders={setExpandedFolders}
-					/>
-				))
+						<ExplorerNode
+							key={child.path}
+							node={child}
+							depth={depth + 1}
+							selectedPath={selectedPath}
+							onSelect={onSelect}
+							search={search}
+							expandedFolders={expandedFolders}
+							setExpandedFolders={setExpandedFolders}
+						/>
+					))
 				: null}
 		</div>
 	);
@@ -195,9 +203,9 @@ function FileExplorer({
 	search,
 }: FileExplorerProps) {
 	const initialExpanded = useMemo(() => collectInitialExpanded(root), [root]);
-	const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>(
-		() => Object.fromEntries(initialExpanded.map((p) => [p, true])),
-	);
+	const [expandedFolders, setExpandedFolders] = useState<
+		Record<string, boolean>
+	>(() => Object.fromEntries(initialExpanded.map((p) => [p, true])));
 
 	// Expand all on search
 	useEffect(() => {
@@ -268,20 +276,29 @@ interface CodePanelProps {
 }
 
 function SkeletonLines() {
+	const widths = [
+		45, 72, 58, 91, 63, 85, 49, 77, 60, 88, 52, 75, 68, 94, 56, 82, 71, 59,
+	];
 	return (
 		<div className="animate-pulse p-4 space-y-2">
-			{Array.from({ length: 18 }).map((_, i) => (
+			{widths.map((w, i) => (
 				<div
 					key={i}
 					className="h-3.5 rounded bg-white/5"
-					style={{ width: `${40 + Math.sin(i * 2.5) * 30 + 20}%` }}
+					style={{ width: `${w}%` }}
 				/>
 			))}
 		</div>
 	);
 }
 
-function CodePanel({ file, allFiles, fileCount, directoryCount, loading }: CodePanelProps) {
+function CodePanel({
+	file,
+	allFiles,
+	fileCount,
+	directoryCount,
+	loading,
+}: CodePanelProps) {
 	const [copied, setCopied] = useState(false);
 	const [downloading, setDownloading] = useState(false);
 	const [tokenLines, setTokenLines] = useState<ThemedToken[][]>([]);
@@ -430,7 +447,9 @@ function CodePanel({ file, allFiles, fileCount, directoryCount, loading }: CodeP
 						title="Download all files as .zip"
 						className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted/40 px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-all hover:border-border hover:bg-muted hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
 					>
-						<FiDownload className={`h-3.5 w-3.5 ${downloading ? "animate-bounce" : ""}`} />
+						<FiDownload
+							className={`h-3.5 w-3.5 ${downloading ? "animate-bounce" : ""}`}
+						/>
 						{downloading ? "Zipping..." : "Download"}
 					</button>
 				</div>
@@ -450,7 +469,10 @@ function CodePanel({ file, allFiles, fileCount, directoryCount, loading }: CodeP
 				) : loading || highlightLoading ? (
 					<SkeletonLines />
 				) : (
-					<table className="w-full border-collapse" style={{ tableLayout: "fixed" }}>
+					<table
+						className="w-full border-collapse"
+						style={{ tableLayout: "fixed" }}
+					>
 						<colgroup>
 							<col style={{ width: "3rem" }} />
 							<col />
@@ -472,19 +494,21 @@ function CodePanel({ file, allFiles, fileCount, directoryCount, loading }: CodeP
 											<code>
 												{line.tokens.length > 0
 													? line.tokens.map(({ token, key }) => (
-														<span
-															key={key}
-															style={{
-																color: token.color ?? "#e6edf3",
-																fontStyle:
-																	(token.fontStyle ?? 0) & 1 ? "italic" : "normal",
-																fontWeight:
-																	(token.fontStyle ?? 0) & 2 ? 700 : 400,
-															}}
-														>
-															{token.content}
-														</span>
-													))
+															<span
+																key={key}
+																style={{
+																	color: token.color ?? "#e6edf3",
+																	fontStyle:
+																		(token.fontStyle ?? 0) & 1
+																			? "italic"
+																			: "normal",
+																	fontWeight:
+																		(token.fontStyle ?? 0) & 2 ? 700 : 400,
+																}}
+															>
+																{token.content}
+															</span>
+														))
 													: " "}
 											</code>
 										</pre>
@@ -598,7 +622,8 @@ export function CodeView() {
 										className="h-5 rounded bg-muted/40"
 										style={{
 											width: `${40 + Math.sin(i * 1.7) * 30 + 20}%`,
-											marginLeft: i % 3 === 0 ? "0" : i % 3 === 1 ? "14px" : "28px",
+											marginLeft:
+												i % 3 === 0 ? "0" : i % 3 === 1 ? "14px" : "28px",
 										}}
 									/>
 								))}

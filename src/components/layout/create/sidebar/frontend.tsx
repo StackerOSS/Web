@@ -99,6 +99,24 @@ export function FrontendConfig() {
 	const toggleTanstackPackage = useStackStore(
 		(state) => state.toggleTanstackPackage,
 	);
+	const nextjsAdvancedOpen = useStackStore((s) => s.nextjsAdvancedOpen);
+	const setNextjsAdvancedOpen = useStackStore((s) => s.setNextjsAdvancedOpen);
+	const nextjs = useStackStore((s) => s.nextjs);
+	const setNextjsSrcDir = useStackStore((s) => s.setNextjsSrcDir);
+	const setNextjsImportAlias = useStackStore((s) => s.setNextjsImportAlias);
+	const setNextjsLinter = useStackStore((s) => s.setNextjsLinter);
+	const setNextjsBundler = useStackStore((s) => s.setNextjsBundler);
+	const setNextjsAgentsMd = useStackStore((s) => s.setNextjsAgentsMd);
+	const setNextjsReactCompiler = useStackStore((s) => s.setNextjsReactCompiler);
+	const tanstackAdvancedOpen = useStackStore((s) => s.tanstackAdvancedOpen);
+	const setTanstackAdvancedOpen = useStackStore(
+		(s) => s.setTanstackAdvancedOpen,
+	);
+	const tanstack = useStackStore((s) => s.tanstack);
+	const setTanstackRouterOnly = useStackStore((s) => s.setTanstackRouterOnly);
+	const setTanstackToolchain = useStackStore((s) => s.setTanstackToolchain);
+	const setTanstackDeployment = useStackStore((s) => s.setTanstackDeployment);
+	const setTanstackExamples = useStackStore((s) => s.setTanstackExamples);
 	const frameworkMeta =
 		FRAMEWORKS.find((item) => item.value === framework) ?? FRAMEWORKS[0];
 
@@ -197,7 +215,9 @@ export function FrontendConfig() {
 									<SiNextdotjs className="h-5 w-5" />
 								</div>
 								<div className="space-y-1">
-									<Label className="text-base font-semibold">Next.js Options</Label>
+									<Label className="text-base font-semibold">
+										Next.js Options
+									</Label>
 									<div className="text-sm text-muted-foreground leading-snug">
 										Customize your Next.js scaffold.
 									</div>
@@ -205,8 +225,8 @@ export function FrontendConfig() {
 							</div>
 							<div className="ml-12 w-[calc(100%-3rem)]">
 								<Collapsible
-									open={useStackStore((s) => s.nextjsAdvancedOpen)}
-									onOpenChange={useStackStore((s) => s.setNextjsAdvancedOpen)}
+									open={nextjsAdvancedOpen}
+									onOpenChange={setNextjsAdvancedOpen}
 									className="rounded-2xl border bg-muted/20"
 								>
 									<CollapsibleTrigger className="flex w-full items-center justify-between p-4 text-left">
@@ -218,9 +238,7 @@ export function FrontendConfig() {
 										</div>
 										<FiChevronDown
 											className={`h-4 w-4 transition-transform ${
-												useStackStore((s) => s.nextjsAdvancedOpen)
-													? "rotate-180"
-													: ""
+												nextjsAdvancedOpen ? "rotate-180" : ""
 											}`}
 										/>
 									</CollapsibleTrigger>
@@ -236,10 +254,8 @@ export function FrontendConfig() {
 													</p>
 												</div>
 												<Switch
-													checked={useStackStore((s) => s.nextjs.srcDir)}
-													onCheckedChange={useStackStore(
-														(s) => s.setNextjsSrcDir,
-													)}
+													checked={nextjs.srcDir}
+													onCheckedChange={setNextjsSrcDir}
 												/>
 											</div>
 
@@ -248,12 +264,8 @@ export function FrontendConfig() {
 													Import alias
 												</Label>
 												<Input
-													value={useStackStore((s) => s.nextjs.importAlias)}
-													onChange={(e) =>
-														useStackStore((s) => s.setNextjsImportAlias)(
-															e.target.value,
-														)
-													}
+													value={nextjs.importAlias}
+													onChange={(e) => setNextjsImportAlias(e.target.value)}
 													placeholder="@/*"
 													className="rounded-lg"
 												/>
@@ -267,16 +279,11 @@ export function FrontendConfig() {
 															key={opt.value}
 															size="sm"
 															variant={
-																useStackStore((s) => s.nextjs.linter) ===
-																opt.value
+																nextjs.linter === opt.value
 																	? "default"
 																	: "outline"
 															}
-															onClick={() =>
-																useStackStore((s) => s.setNextjsLinter)(
-																	opt.value,
-																)
-															}
+															onClick={() => setNextjsLinter(opt.value)}
 															className="rounded-lg justify-start"
 														>
 															<FiCode className="w-3.5 h-3.5 mr-2" />
@@ -294,16 +301,11 @@ export function FrontendConfig() {
 															key={opt.value}
 															size="sm"
 															variant={
-																useStackStore((s) => s.nextjs.bundler) ===
-																opt.value
+																nextjs.bundler === opt.value
 																	? "default"
 																	: "outline"
 															}
-															onClick={() =>
-																useStackStore((s) => s.setNextjsBundler)(
-																	opt.value,
-																)
-															}
+															onClick={() => setNextjsBundler(opt.value)}
 															className="rounded-lg justify-start"
 														>
 															<FiServer className="w-3.5 h-3.5 mr-2" />
@@ -323,12 +325,8 @@ export function FrontendConfig() {
 													</p>
 												</div>
 												<Switch
-													checked={useStackStore(
-														(s) => s.nextjs.reactCompiler,
-													)}
-													onCheckedChange={useStackStore(
-														(s) => s.setNextjsReactCompiler,
-													)}
+													checked={nextjs.reactCompiler}
+													onCheckedChange={setNextjsReactCompiler}
 												/>
 											</div>
 
@@ -342,10 +340,8 @@ export function FrontendConfig() {
 													</p>
 												</div>
 												<Switch
-													checked={useStackStore((s) => s.nextjs.agentsMd)}
-													onCheckedChange={useStackStore(
-														(s) => s.setNextjsAgentsMd,
-													)}
+													checked={nextjs.agentsMd}
+													onCheckedChange={setNextjsAgentsMd}
 												/>
 											</div>
 										</div>
@@ -380,10 +376,8 @@ export function FrontendConfig() {
 							</div>
 							<div className="ml-12 w-[calc(100%-3rem)]">
 								<Collapsible
-									open={useStackStore((s) => s.tanstackAdvancedOpen)}
-									onOpenChange={useStackStore(
-										(s) => s.setTanstackAdvancedOpen,
-									)}
+									open={tanstackAdvancedOpen}
+									onOpenChange={setTanstackAdvancedOpen}
 									className="rounded-2xl border bg-muted/20"
 								>
 									<CollapsibleTrigger className="flex w-full items-center justify-between p-4 text-left">
@@ -395,9 +389,7 @@ export function FrontendConfig() {
 										</div>
 										<FiChevronDown
 											className={`h-4 w-4 transition-transform ${
-												useStackStore((s) => s.tanstackAdvancedOpen)
-													? "rotate-180"
-													: ""
+												tanstackAdvancedOpen ? "rotate-180" : ""
 											}`}
 										/>
 									</CollapsibleTrigger>
@@ -413,12 +405,8 @@ export function FrontendConfig() {
 													</p>
 												</div>
 												<Switch
-													checked={useStackStore(
-														(s) => s.tanstack.routerOnly,
-													)}
-													onCheckedChange={useStackStore(
-														(s) => s.setTanstackRouterOnly,
-													)}
+													checked={tanstack.routerOnly}
+													onCheckedChange={setTanstackRouterOnly}
 												/>
 											</div>
 
@@ -430,17 +418,11 @@ export function FrontendConfig() {
 															key={opt.value}
 															size="sm"
 															variant={
-																useStackStore(
-																	(s) => s.tanstack.toolchain,
-																) === opt.value
+																tanstack.toolchain === opt.value
 																	? "default"
 																	: "outline"
 															}
-															onClick={() =>
-																useStackStore(
-																	(s) => s.setTanstackToolchain,
-																)(opt.value)
-															}
+															onClick={() => setTanstackToolchain(opt.value)}
 															className="rounded-lg justify-start"
 														>
 															<FiCode className="w-3.5 h-3.5 mr-2" />
@@ -460,17 +442,11 @@ export function FrontendConfig() {
 															key={opt.value}
 															size="sm"
 															variant={
-																useStackStore(
-																	(s) => s.tanstack.deployment,
-																) === opt.value
+																tanstack.deployment === opt.value
 																	? "default"
 																	: "outline"
 															}
-															onClick={() =>
-																useStackStore(
-																	(s) => s.setTanstackDeployment,
-																)(opt.value)
-															}
+															onClick={() => setTanstackDeployment(opt.value)}
 															className="rounded-lg justify-start"
 														>
 															<SiCloudflare className="w-3.5 h-3.5 mr-2" />
@@ -490,12 +466,8 @@ export function FrontendConfig() {
 													</p>
 												</div>
 												<Switch
-													checked={useStackStore(
-														(s) => s.tanstack.examples,
-													)}
-													onCheckedChange={useStackStore(
-														(s) => s.setTanstackExamples,
-													)}
+													checked={tanstack.examples}
+													onCheckedChange={setTanstackExamples}
 												/>
 											</div>
 										</div>
