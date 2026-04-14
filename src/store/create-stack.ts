@@ -19,6 +19,10 @@ import {
 	type SidebarTab,
 	type TweakcnTheme,
 	type UiSystem,
+	type NextJsLinter,
+	type NextJsBundler,
+	type TanStackToolchain,
+	type TanStackDeployment,
 } from "@/lib/stacker";
 
 export type PreviewMode = "light" | "dark";
@@ -57,6 +61,22 @@ interface StackStateData {
 	sidebarTab: SidebarTab;
 	previewTab: PreviewTab;
 	shadcnAdvancedOpen: boolean;
+	nextjsAdvancedOpen: boolean;
+	tanstackAdvancedOpen: boolean;
+	nextjs: {
+		srcDir: boolean;
+		importAlias: string;
+		linter: NextJsLinter;
+		bundler: NextJsBundler;
+		reactCompiler: boolean;
+		agentsMd: boolean;
+	};
+	tanstack: {
+		routerOnly: boolean;
+		toolchain: TanStackToolchain;
+		deployment: TanStackDeployment;
+		examples: boolean;
+	};
 }
 
 interface StackActions {
@@ -94,6 +114,18 @@ interface StackActions {
 	setSidebarTab: (tab: SidebarTab) => void;
 	setPreviewTab: (tab: PreviewTab) => void;
 	setShadcnAdvancedOpen: (open: boolean) => void;
+	setNextjsAdvancedOpen: (open: boolean) => void;
+	setTanstackAdvancedOpen: (open: boolean) => void;
+	setNextjsSrcDir: (srcDir: boolean) => void;
+	setNextjsImportAlias: (alias: string) => void;
+	setNextjsLinter: (linter: NextJsLinter) => void;
+	setNextjsBundler: (bundler: NextJsBundler) => void;
+	setNextjsReactCompiler: (enabled: boolean) => void;
+	setNextjsAgentsMd: (enabled: boolean) => void;
+	setTanstackRouterOnly: (routerOnly: boolean) => void;
+	setTanstackToolchain: (toolchain: TanStackToolchain) => void;
+	setTanstackDeployment: (deployment: TanStackDeployment) => void;
+	setTanstackExamples: (examples: boolean) => void;
 }
 
 export type StackState = StackStateData & StackActions;
@@ -132,6 +164,22 @@ const defaultStackState: StackStateData = {
 	sidebarTab: "General",
 	previewTab: "Code",
 	shadcnAdvancedOpen: false,
+	nextjsAdvancedOpen: false,
+	tanstackAdvancedOpen: false,
+	nextjs: {
+		srcDir: false,
+		importAlias: "@/*",
+		linter: "eslint",
+		bundler: "turbopack",
+		reactCompiler: false,
+		agentsMd: true,
+	},
+	tanstack: {
+		routerOnly: false,
+		toolchain: "eslint",
+		deployment: "none",
+		examples: true,
+	},
 };
 
 function createStackActions(store: Store<StackStateData>): StackActions {
@@ -251,6 +299,60 @@ function createStackActions(store: Store<StackStateData>): StackActions {
 			store.setState((current) => ({ ...current, previewTab })),
 		setShadcnAdvancedOpen: (shadcnAdvancedOpen) =>
 			store.setState((current) => ({ ...current, shadcnAdvancedOpen })),
+		setNextjsAdvancedOpen: (nextjsAdvancedOpen) =>
+			store.setState((current) => ({ ...current, nextjsAdvancedOpen })),
+		setTanstackAdvancedOpen: (tanstackAdvancedOpen) =>
+			store.setState((current) => ({ ...current, tanstackAdvancedOpen })),
+		setNextjsSrcDir: (srcDir) =>
+			store.setState((current) => ({
+				...current,
+				nextjs: { ...current.nextjs, srcDir },
+			})),
+		setNextjsImportAlias: (importAlias) =>
+			store.setState((current) => ({
+				...current,
+				nextjs: { ...current.nextjs, importAlias },
+			})),
+		setNextjsLinter: (linter) =>
+			store.setState((current) => ({
+				...current,
+				nextjs: { ...current.nextjs, linter },
+			})),
+		setNextjsBundler: (bundler) =>
+			store.setState((current) => ({
+				...current,
+				nextjs: { ...current.nextjs, bundler },
+			})),
+		setNextjsReactCompiler: (reactCompiler) =>
+			store.setState((current) => ({
+				...current,
+				nextjs: { ...current.nextjs, reactCompiler },
+			})),
+		setNextjsAgentsMd: (agentsMd) =>
+			store.setState((current) => ({
+				...current,
+				nextjs: { ...current.nextjs, agentsMd },
+			})),
+		setTanstackRouterOnly: (routerOnly) =>
+			store.setState((current) => ({
+				...current,
+				tanstack: { ...current.tanstack, routerOnly },
+			})),
+		setTanstackToolchain: (toolchain) =>
+			store.setState((current) => ({
+				...current,
+				tanstack: { ...current.tanstack, toolchain },
+			})),
+		setTanstackDeployment: (deployment) =>
+			store.setState((current) => ({
+				...current,
+				tanstack: { ...current.tanstack, deployment },
+			})),
+		setTanstackExamples: (examples) =>
+			store.setState((current) => ({
+				...current,
+				tanstack: { ...current.tanstack, examples },
+			})),
 	};
 }
 

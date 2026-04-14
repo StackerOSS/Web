@@ -31,6 +31,8 @@ export function useStackerManifest() {
 	const typings = useStackStore((state) => state.typings);
 	const animations = useStackStore((state) => state.animations);
 	const packages = useStackStore((state) => state.packages);
+	const nextjs = useStackStore((state) => state.nextjs);
+	const tanstack = useStackStore((state) => state.tanstack);
 
 	return useMemo(
 		() =>
@@ -63,6 +65,8 @@ export function useStackerManifest() {
 				typings,
 				animations,
 				packages,
+				nextjs,
+				tanstack,
 			}),
 		[
 			name,
@@ -93,6 +97,8 @@ export function useStackerManifest() {
 			typings,
 			animations,
 			packages,
+			nextjs,
+			tanstack,
 		],
 	);
 }
