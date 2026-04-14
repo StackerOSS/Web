@@ -44,7 +44,7 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
   description =
     "Configure your entire full-stack project visually. Pick your framework, UI library, auth layer, ORM, API, and theme. See live code preview. Copy the template ID. Build locally with one CLI command.",
   primaryButtonText = "Start Building",
-  primaryButtonHref = "/builder",
+  primaryButtonHref = "/create",
   secondaryButtonText = "View on GitHub",
   secondaryButtonHref = "https://github.com/stackeross/Web",
 }) => {
