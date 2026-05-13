@@ -59,7 +59,6 @@ bunx stacker-cli xCjNK1
 | Validation | ArkType (manifest schema) |
 | Package manager | Bun |
 | Linting | Biome |
-| Testing | Vitest + Testing Library |
 
 ---
 
